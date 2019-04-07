@@ -126,7 +126,7 @@ public class Renderer
 				GL11.glDisable( GL11.GL_CULL_FACE );
 			else
 				GL11.glEnable( GL11.GL_CULL_FACE );
-			GL11.glDrawElements( GL11.GL_TRIANGLES, model.GetMaterialIndexCount( id ), GL11.GL_UNSIGNED_INT, model.GetMaterialIndexOffset( id ) * 4 );
+			GL11.glDrawElements( GL11.GL_TRIANGLES, model.GetMaterialIndexCount( id ), GL11.GL_UNSIGNED_INT, model.GetMaterialIndexOffset( id ) );
 			material.GetShader().Stop();
 		}
 

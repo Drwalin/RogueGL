@@ -1,6 +1,5 @@
 package Materials;
 
-import java.util.Arrays;
 import java.util.List;
 
 import RenderEngine.TextureInstance;

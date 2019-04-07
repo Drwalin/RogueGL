@@ -10,7 +10,6 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.*;

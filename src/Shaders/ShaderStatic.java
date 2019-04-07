@@ -7,15 +7,13 @@ import java.util.List;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
-import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Vector3f;
+import org.lwjgl.util.vector.*;
 
 import Materials.Material;
 import Materials.MaterialShineable;
 import RenderEngine.Renderer;
 import SceneNodes.DrawableSceneNode;
 import SceneNodes.Light;
-import Util.Maths;
 
 public class ShaderStatic extends Shader
 {

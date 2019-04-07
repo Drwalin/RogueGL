@@ -3,12 +3,9 @@
 
 package Shaders;
 
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
-import org.lwjgl.util.vector.*;
 
-import Game.GameLoop;
 import Materials.Material;
 import RenderEngine.Renderer;
 import SceneNodes.DrawableSceneNode;
