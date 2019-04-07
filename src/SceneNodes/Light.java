@@ -5,14 +5,16 @@ package SceneNodes;
 
 import org.lwjgl.util.vector.*;
 
-public class Light extends Camera
+import RenderEngine.FrameBuffer;
+
+public class Light extends CameraBase
 {
 	private Vector3f color;
 	private Vector3f attenuation;
 
 	public Light( float fov, float zNear, float zFar, Vector3f location, Vector3f rotation, Vector3f scale, Vector3f color, Vector3f attenuation )
 	{
-		super( fov, zNear, zFar, location, rotation, scale );
+		super( new FrameBuffer(512,512,0), fov, zNear, zFar, location, rotation, scale );
 		this.color = color;
 		this.attenuation = attenuation;
 	}

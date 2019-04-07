@@ -12,7 +12,7 @@ import org.lwjgl.util.vector.Vector3f;
 
 import Materials.Material;
 import Models.RawModel;
-import SceneNodes.Camera;
+import SceneNodes.CameraBase;
 import SceneNodes.DrawableSceneNode;
 import SceneNodes.Light;
 
@@ -80,7 +80,7 @@ public class Renderer
 		return this.drawingShadow;
 	}
 
-	protected void Prepare( Camera camera )
+	protected void Prepare( CameraBase camera )
 	{
 		if( camera instanceof Light )
 		{

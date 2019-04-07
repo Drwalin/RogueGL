@@ -13,7 +13,7 @@ import org.lwjgl.opengl.GL11;
 import Materials.Material;
 import Models.RawModel;
 import Models.TexturedModel;
-import SceneNodes.Camera;
+import SceneNodes.CameraBase;
 import SceneNodes.DrawableSceneNode;
 import SceneNodes.Light;
 import Shaders.Shader;
@@ -132,7 +132,7 @@ public class MasterRenderer extends Renderer
 		}
 	}
 
-	public void Render( Camera camera )
+	public void Render( CameraBase camera )
 	{
 		// Update DrawableSceneNodes world transformation matrices:
 		for( DrawableSceneNode sceneNode : this.sceneNodesBank.keySet() )
@@ -153,7 +153,7 @@ public class MasterRenderer extends Renderer
 		DisplayManager.Update();
 	}
 
-	private void RenderScene( Camera camera )
+	private void RenderScene( CameraBase camera )
 	{
 		super.Prepare( camera );
 
