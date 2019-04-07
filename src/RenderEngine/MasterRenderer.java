@@ -8,8 +8,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 
+import Loaders.Loader;
 import Materials.Material;
 import Models.RawModel;
 import Models.TexturedModel;
@@ -17,11 +19,42 @@ import SceneNodes.CameraBase;
 import SceneNodes.DrawableSceneNode;
 import SceneNodes.Light;
 import Shaders.Shader;
+import Shaders.ShaderScreenDrawer;
 
 public class MasterRenderer extends Renderer
 {
 	private Map<Shader, Map<RawModel, Map<Material, Map<Integer, Set<DrawableSceneNode>>>>> sceneNodes = new HashMap<Shader, Map<RawModel, Map<Material, Map<Integer, Set<DrawableSceneNode>>>>>();
 	private Map<DrawableSceneNode, TexturedModel> sceneNodesBank = new HashMap<DrawableSceneNode, TexturedModel>();
+
+	public RawModel squareRawModel;
+	public Shader screenDrawerShader;
+
+	public MasterRenderer()
+	{
+		int vaoID = Loader.CreateVAO();
+		int[] vboID = new int[2];
+
+		int[] indicesArray = { //
+				0, 1, 2,
+				0, 2, 3
+		};
+		float[] verticesArray = { //
+				-1, -1, //
+				1, -1, //
+				1, 1, //
+				-1, 1
+		};
+
+		vboID[0] = Loader.BindIndicesBuffer( indicesArray );
+		vboID[1] = Loader.StoreDataInAttributeList( 0, 2, verticesArray );
+		Loader.UnbindVAO();
+
+		int[] materialOffsets = { 0
+		};
+
+		this.squareRawModel = new RawModel( vaoID, vboID, materialOffsets, indicesArray.length );
+		this.screenDrawerShader = new ShaderScreenDrawer();
+	}
 
 	private void Add( Shader shader, Material material, RawModel model, Integer id, DrawableSceneNode sceneNode )
 	{
@@ -144,7 +177,7 @@ public class MasterRenderer extends Renderer
 		this.RenderScene( camera );
 
 		// Draw shadows and lights as post process:
-
+		this.DrawToScreen();
 		// Draw other post processes:
 
 		// Draw GUI:
@@ -206,6 +239,29 @@ public class MasterRenderer extends Renderer
 				shader.Stop();
 			}
 		}
+
+		camera.GetFrameBuffer().Unbind();
 	}
 
+	private void DrawToScreen()
+	{
+		this.camera.GetFrameBuffer().Unbind();
+		GL11.glViewport( 0, 0, Display.getWidth(), Display.getHeight() );
+
+		GL11.glDisable( GL11.GL_ALPHA );
+		GL11.glDisable( GL11.GL_DEPTH );
+		GL11.glDisable( GL11.GL_DEPTH_TEST );
+		GL11.glDisable( GL11.GL_CULL_FACE );
+		GL11.glClear( GL11.GL_COLOR_BUFFER_BIT );
+
+		this.squareRawModel.Bind();
+		this.screenDrawerShader.Start();
+		this.screenDrawerShader.SetUniforms( null, this, null );
+
+		GL11.glDrawElements( GL11.GL_TRIANGLES, 6, GL11.GL_UNSIGNED_INT, 0 );
+
+		this.screenDrawerShader.Stop();
+		this.squareRawModel.Unbind();
+
+	}
 }

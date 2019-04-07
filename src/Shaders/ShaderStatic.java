@@ -75,6 +75,8 @@ public class ShaderStatic extends Shader
 		this.isTwoSidedUniform = super.GetUniformLocation( "isTwoSided" );
 		this.useFakeLightingUniform = super.GetUniformLocation( "useFakeLighting" );
 		this.textureSamplerUniform = super.GetUniformLocation( "textureSampler" );
+		
+		super.SetUniform1( this.textureSamplerUniform, this.textureSamplerIDtex );
 	}
 
 	@Override
@@ -90,7 +92,6 @@ public class ShaderStatic extends Shader
 
 		GL13.glActiveTexture( GL13.GL_TEXTURE0 );
 		GL11.glBindTexture( GL11.GL_TEXTURE_2D, material.GetTextures().get( 0 ).GetTextureID() );
-		super.SetUniform1( this.textureSamplerUniform, this.textureSamplerIDtex );
 
 		List<Light> lights = renderer.GetLights();
 		if( lights.size() > 0 )

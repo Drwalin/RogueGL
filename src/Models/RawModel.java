@@ -12,7 +12,7 @@ public class RawModel
 	private int[] vboID = null;
 	private int vaoID = 0;
 	private int[] vertexOffset = null;
-	private int vertexCount = 0;
+	private int vertexCount = 0; 
 
 	public RawModel( int vaoID, int[] vboID, int[] vertexOffset, int vertexCount )
 	{

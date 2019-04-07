@@ -10,6 +10,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
+import Loaders.Loader;
 import Materials.Material;
 import Models.RawModel;
 import SceneNodes.CameraBase;
@@ -28,7 +29,12 @@ public class Renderer
 	protected Vector3f ambientLightColor = new Vector3f( .2f, .2f, .2f );
 	protected List<Light> lights = new ArrayList<Light>();
 
-	protected Vector3f cameraLocation;
+	protected CameraBase camera;
+	
+	public CameraBase GetCamera()
+	{
+		return this.camera;
+	}
 
 	public Matrix4f GetProjectionMatrix()
 	{
@@ -72,7 +78,7 @@ public class Renderer
 
 	public Vector3f GetCameraLocation()
 	{
-		return this.cameraLocation;
+		return this.camera.GetLocation();
 	}
 
 	public boolean DrawingShadowBuffer()
@@ -82,54 +88,34 @@ public class Renderer
 
 	protected void Prepare( CameraBase camera )
 	{
+		this.camera = camera;
+		camera.GetFrameBuffer().Bind();
+		
 		if( camera instanceof Light )
 		{
 			this.drawingShadow = true;
-
+			
+			GL11.glDisable( GL11.GL_ALPHA );
+			GL11.glEnable( GL11.GL_DEPTH );
+			GL11.glEnable( GL11.GL_DEPTH_TEST );
+			GL11.glClear( GL11.GL_DEPTH_BUFFER_BIT );
+			GL11.glCullFace( GL11.GL_FRONT );
+			GL11.glEnable( GL11.GL_CULL_FACE );
 		} else
 		{
 			this.drawingShadow = false;
-
+			
 			GL11.glEnable( GL11.GL_ALPHA );
 			GL11.glEnable( GL11.GL_ALPHA_TEST );
 			GL11.glEnable( GL11.GL_DEPTH );
 			GL11.glEnable( GL11.GL_DEPTH_TEST );
 			GL11.glClearColor( 0.3f, 0.3f, 0.3f, 1 );
 			GL11.glClear( GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT );
-			GL11.glCullFace( GL11.GL_BACK );
-			GL11.glEnable( GL11.GL_CULL_FACE );
 		}
 
 		camera.UpdateMatrices();
 		this.projectionMatrix = camera.GetProjectionMatrix();
 		this.viewMatrix = camera.GetViewMatrix();
 		Matrix4f.mul( this.projectionMatrix, this.viewMatrix, this.combinedMatrix );
-
-		this.cameraLocation = camera.GetLocation();
-	}
-
-	private void Render( DrawableSceneNode sceneNode )
-	{
-		sceneNode.UpdateWorldTransformationMatrix();
-		RawModel model = sceneNode.GetModel().GetRawModel();
-		List<Material> materialSet = sceneNode.GetModel().GetMaterialSet();
-
-		model.Bind();
-
-		int id = 2;
-		for( id = 0; id < model.GetMaterialsCount(); ++id )
-		{
-			Material material = materialSet.get( id );
-			material.GetShader().Start();
-			material.GetShader().SetUniforms( sceneNode, this, material );
-			if( material.HasTransparency() )
-				GL11.glDisable( GL11.GL_CULL_FACE );
-			else
-				GL11.glEnable( GL11.GL_CULL_FACE );
-			GL11.glDrawElements( GL11.GL_TRIANGLES, model.GetMaterialIndexCount( id ), GL11.GL_UNSIGNED_INT, model.GetMaterialIndexOffset( id ) );
-			material.GetShader().Stop();
-		}
-
-		model.Unbind();
 	}
 }
