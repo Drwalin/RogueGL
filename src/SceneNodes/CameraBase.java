@@ -60,8 +60,8 @@ public abstract class CameraBase extends SceneNode
 	public void UpdateMatrices()
 	{
 		// Update projectionMatrix:
-		float aspectRatio = (float) Display.getWidth() / (float) Display.getHeight();
-		float y_scale = (float) ((1f / Math.tan( Math.toRadians( this.fov / 2f ) )) * aspectRatio);
+		float aspectRatio = (float) this.frameBuffer.GetWidth() / (float) this.frameBuffer.GetHeight();
+		float y_scale = (float) (1f / Math.tan( Math.toRadians( this.fov / 2f ) ));
 		float x_scale = y_scale / aspectRatio;
 		float frustum_length = this.zFar - this.zNear;
 

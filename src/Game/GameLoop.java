@@ -43,9 +43,13 @@ public class GameLoop
 		TexturedModel palmModel = null;
 		TexturedModel barrelModel = null;
 		TexturedModel multiMatModel = null;
+		TexturedModel boulderModel = null;
 
 		TextureInstance texturePalm = loader.LoadTexture( "fern" );
-		TextureInstance textureWood = loader.LoadTexture( "wood1" );
+		TextureInstance textureCrate = loader.LoadTexture( "crate" );
+		TextureInstance textureCrateNormal = loader.LoadTexture( "crateNormal" );
+		TextureInstance textureBoulder = loader.LoadTexture( "boulder" );
+		TextureInstance textureBoulderNormal = loader.LoadTexture( "boulderNormal" );
 		TextureInstance textureBarrel = loader.LoadTexture( "barrelTexture" );
 		TextureInstance textureBarrelNormal = loader.LoadTexture( "barrelNormal" );
 		TextureInstance texturePilar = loader.LoadTexture( "pilarMarbleLightPink" );
@@ -56,8 +60,12 @@ public class GameLoop
 			palmModel = new TexturedModel( model, new MaterialShineable( shader, true, 1.0f, 0.03f, texturePalm ) );
 		}
 		{
-			RawModel model = loader.LoadOBJ( "Crate01" );
-			crateModel = new TexturedModel( model, new MaterialShineable( shader, true, 12.0f, 0.1f, textureWood ) );
+			RawModel model = loader.LoadOBJ( "crate", true );
+			crateModel = new TexturedModel( model, new MaterialShineable( shaderNormalMapped, false, 9.0f, .8f, textureCrate, textureCrateNormal ) );
+		}
+		{
+			RawModel model = loader.LoadOBJ( "boulder", true );
+			boulderModel = new TexturedModel( model, new MaterialShineable( shaderNormalMapped, false, 3.0f, .4f, textureBoulder, textureBoulderNormal ) );
 		}
 		{
 			RawModel model = loader.LoadOBJ( "Barrel", true );
@@ -74,17 +82,20 @@ public class GameLoop
 
 		DrawableSceneNode palm1 = new DrawableSceneNode( renderer, palmModel, new Vector3f( 0, 2, -10 ), new Vector3f( 0, 0, 0 ), new Vector3f( 0.2f, 0.2f, 0.2f ) );
 		DrawableSceneNode palm2 = new DrawableSceneNode( renderer, palmModel, new Vector3f( 0, 2, -17 ), new Vector3f( 0, 3.14159f, 0 ), new Vector3f( 0.2f, 0.2f, 0.2f ) );
-		DrawableSceneNode sceneNode = new DrawableSceneNode( renderer, crateModel, new Vector3f( 0, 0, -10 ), new Vector3f( 0.2f, 0.3f, 0.5f ), new Vector3f( 0.5f, 0.5f, 0.5f ) );
+		DrawableSceneNode sceneNode = new DrawableSceneNode( renderer, crateModel, new Vector3f( 0, 0, -10 ), new Vector3f( 0.2f, 0.3f, 0.5f ), new Vector3f( 0.01f, 0.01f, 0.01f ) );
 		DrawableSceneNode barrelNode = new DrawableSceneNode( renderer, barrelModel, new Vector3f( 0, 0, 0 ), new Vector3f( 0, 0, 0 ), new Vector3f( 0.1f, 0.1f, 0.1f ) );
 		DrawableSceneNode multiMatNode = new DrawableSceneNode( renderer, multiMatModel, new Vector3f( 0, 0, 30 ), new Vector3f( 0, 0, 0 ), new Vector3f( 1, 1, 1 ) );
 		DrawableSceneNode pilarNode = new DrawableSceneNode( renderer, pilarModel, new Vector3f( 0, 2, 5 ), new Vector3f( 0, 0, 0 ), new Vector3f( 1, 1, 1 ) );
-
+		DrawableSceneNode boulderNode = new DrawableSceneNode( renderer, boulderModel, new Vector3f( 0, 3, 7 ), new Vector3f( 0, 0, 0 ), new Vector3f( .2f, .2f, .2f ) );
+		
+		
 		renderer.AddSceneNode( palm1 );
 		renderer.AddSceneNode( palm2 );
 		renderer.AddSceneNode( sceneNode );
 		renderer.AddSceneNode( barrelNode );
 		renderer.AddSceneNode( multiMatNode );
 		renderer.AddSceneNode( pilarNode );
+		renderer.AddSceneNode( boulderNode );
 
 		Light light = new Light( 70, 0.1f, 1000, new Vector3f( -5, 5, 15 ), new Vector3f( 0, 0, 0 ), new Vector3f( 1, 1, 1 ), new Vector3f( .8f, .8f, 1 ), new Vector3f( .9f, .01f, .001f ) );
 		renderer.AddLight( light );

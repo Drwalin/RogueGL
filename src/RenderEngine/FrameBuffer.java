@@ -18,12 +18,15 @@ public class FrameBuffer
 	private int depthTexture;
 	private int[] colorsBufferTexture;
 
-	public FrameBuffer( int width, int height, int colorAttachmentCount )
+	public FrameBuffer( int width, int height, boolean useDepth, int colorAttachmentCount )
 	{
 		this.width = width;
 		this.height = height;
 		this.frameBufferId = FrameBuffer.GenerateFrameBuffer( this.width, this.height, colorAttachmentCount );
-		this.depthTexture = FrameBuffer.GenerateDepthBufferTexture( this.width, this.height );
+		if( useDepth )
+			this.depthTexture = FrameBuffer.GenerateDepthBufferTexture( this.width, this.height );
+		else
+			this.frameBufferId = -1;
 		this.colorsBufferTexture = new int[colorAttachmentCount];
 		for( int i = 0; i < this.colorsBufferTexture.length; ++i )
 			this.colorsBufferTexture[i] = FrameBuffer.GenerateTexture( this.width, this.height, i );
@@ -60,14 +63,29 @@ public class FrameBuffer
 		GL11.glDeleteTextures( this.depthTexture );
 	}
 
+	public int GetWidth()
+	{
+		return this.width;
+	}
+
+	public int GetHeight()
+	{
+		return this.height;
+	}
+
 	private static int GenerateFrameBuffer( int width, int height, int colorAttachmentCount )
 	{
 		int frameBuffer = GL30.glGenFramebuffers();
 		GL30.glBindFramebuffer( GL30.GL_FRAMEBUFFER, frameBuffer );
-		IntBuffer attachmentBuffer = BufferUtils.createIntBuffer( colorAttachmentCount );
-		for( int i = 0; i < colorAttachmentCount; ++i )
-			attachmentBuffer.put( i, GL30.GL_COLOR_ATTACHMENT0 + i );
-		GL20.glDrawBuffers( attachmentBuffer );
+		if( colorAttachmentCount == 0 )
+			GL11.glDrawBuffer( GL11.GL_NONE );
+		else
+		{
+			IntBuffer attachmentBuffer = BufferUtils.createIntBuffer( colorAttachmentCount );
+			for( int i = 0; i < colorAttachmentCount; ++i )
+				attachmentBuffer.put( i, GL30.GL_COLOR_ATTACHMENT0 + i );
+			GL20.glDrawBuffers( attachmentBuffer );
+		}
 		return frameBuffer;
 	}
 
@@ -78,6 +96,8 @@ public class FrameBuffer
 		GL11.glTexImage2D( GL11.GL_TEXTURE_2D, 0, GL14.GL_DEPTH_COMPONENT32, width, height, 0, GL11.GL_DEPTH_COMPONENT, GL11.GL_FLOAT, (ByteBuffer) null );
 		GL11.glTexParameteri( GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR );
 		GL11.glTexParameteri( GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR );
+		GL11.glTexParameteri( GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE );
+		GL11.glTexParameteri( GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE );
 		GL32.glFramebufferTexture( GL30.GL_FRAMEBUFFER, GL30.GL_DEPTH_ATTACHMENT, texture, 0 );
 		return texture;
 	}
