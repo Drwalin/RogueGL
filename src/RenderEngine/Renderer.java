@@ -10,11 +10,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
-import Loaders.Loader;
-import Materials.Material;
-import Models.RawModel;
 import SceneNodes.CameraBase;
-import SceneNodes.DrawableSceneNode;
 import SceneNodes.Light;
 
 public class Renderer

@@ -1,11 +1,26 @@
 
 #version 400 core
 
+const int MAX_LIGHT_SOURCES = 16; 
+
 in vec2 texCoord;
 in vec2 screenCoord;
 
 uniform sampler2D cameraColorBuffer;
 uniform sampler2D cameraDepthBuffer;
+uniform sampler2D cameraNormalBuffer;
+uniform sampler2D cameraMaterialBuffer;
+
+uniform vec3 cameraPosition;
+uniform mat4 cameraMatrix;			// invert( projectionMaterix * viewMatrix )
+
+uniform vec3 lightsPosition[MAX_LIGHT_SOURCES]; 
+uniform mat4 lightsMatrix[MAX_LIGHT_SOURCES];		// [i] = projectionMaterix * viewMatrix
+uniform vec3 lightsColor[MAX_LIGHT_SOURCES];
+uniform vec3 lightsAttenuation[MAX_LIGHT_SOURCES];
+//uniform sampler2D lightsDepthBuffer[MAX_LIGHT_SOURCES];
+
+uniform int currentlyUsedLightSorces;
 
 out vec4 fragColor;
 
@@ -32,4 +47,5 @@ void main( void )
 	//fragColor = texture( cameraColorBuffer, texCoord );
 	*/
 	fragColor = vec4( texture( cameraColorBuffer, texCoord ).rgb, 1 );
+	//fragColor = vec4( texture( cameraNormalBuffer, texCoord ).xyz*2 - 1, 1 );
 }

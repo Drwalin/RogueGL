@@ -7,6 +7,8 @@ in vec3 toLightVector;
 in vec3 toCameraVector;
 
 out vec4 fragColor;
+out vec4 fragNormal;
+out vec4 fragMaterial;
 
 uniform sampler2D textureSampler;
 
@@ -30,6 +32,7 @@ void main( void )
 	if( drawingShadow == 0 )
 	{
 		vec3 unitNormal = normalize(surfaceNormal);
+		/*
 		vec3 unitToLightVector = normalize(toLightVector);
 		vec3 unitToCameraVector = normalize(toCameraVector);
 		
@@ -41,9 +44,15 @@ void main( void )
 		vec3 diffuse = max( lightColor * diffuseBrightness, ambientLightColor );
 		
 		fragColor = textureColorPoint * vec4(diffuse,1.0) + vec4( lightColor * ( specularBrightness * reflectivity ), 0 );
+		*/
+		fragColor = textureColorPoint;
+		
+		fragNormal = vec4( unitNormal*0.5 + 0.5, 1 );
+		fragMaterial = vec4( shineDamper/32, reflectivity/4, 0, 1 );
 	}
 	else
 	{
 		// ...
 	}
+	
 }

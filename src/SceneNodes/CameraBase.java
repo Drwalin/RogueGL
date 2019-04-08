@@ -4,7 +4,6 @@
 package SceneNodes;
 
 import org.lwjgl.input.*;
-import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.*;
 
 import RenderEngine.FrameBuffer;

@@ -14,41 +14,41 @@ import Materials.MaterialShineable;
 import RenderEngine.Renderer;
 import SceneNodes.DrawableSceneNode;
 import SceneNodes.Light;
+import Uniforms.*;
 
 public class ShaderStatic extends Shader
 {
-	private static final String VERTEX_FILE = "res/shaders/shading.vs";
-	private static final String FRAGMENT_FILE = "res/shaders/shading.fs";
+	private static final String SHADER_PACKAGE_NAME = "shading";
 
-	private int worldTransformUniform;
-	private int viewTransformUniform;
-	private int projectionTransformUniform;
-	private int combinedTransformUniform;
+	private Uniform4x worldTransformUniform;
+	private Uniform4x viewTransformUniform;
+	private Uniform4x projectionTransformUniform;
+	private Uniform4x combinedTransformUniform;
 
-	private int textureSamplerUniform;
+	private Uniform1i textureSamplerUniform;
 	private int textureSamplerIDtex = 0;
 
-	private int lightPositionUniform;
-	private int lightColorUniform;
-	private int shineDamperUniform;
-	private int reflectivityUniform;
-	private int isTwoSidedUniform;
-	private int useFakeLightingUniform;
+	private Uniform3f lightPositionUniform;
+	private Uniform3f lightColorUniform;
+	private Uniform1f shineDamperUniform;
+	private Uniform1f reflectivityUniform;
+	private Uniform1i isTwoSidedUniform;
+	private Uniform1i useFakeLightingUniform;
 
-	private int ambientLightColorUniform;
+	private Uniform3f ambientLightColorUniform;
 
-	private int cameraPossitionUniform;
+	private Uniform3f cameraPossitionUniform;
 
 	private Matrix4f fullMatrixTransform = new Matrix4f();
 
 	public ShaderStatic()
 	{
-		super( ShaderStatic.VERTEX_FILE, ShaderStatic.FRAGMENT_FILE );
+		super( ShaderStatic.SHADER_PACKAGE_NAME );
 	}
 
-	public ShaderStatic( String vertex, String fragment )
+	public ShaderStatic( String shaderPackageName )
 	{
-		super( vertex, fragment );
+		super( shaderPackageName );
 	}
 
 	@Override
@@ -58,58 +58,61 @@ public class ShaderStatic extends Shader
 		super.BindAttribute( 1, "textureCoords" );
 		super.BindAttribute( 2, "normal" );
 	}
-
+	
 	@Override
 	protected void LoadUniformLocations()
 	{
-		this.worldTransformUniform = super.GetUniformLocation( "worldTransform" );
-		this.viewTransformUniform = super.GetUniformLocation( "viewTransform" );
-		this.projectionTransformUniform = super.GetUniformLocation( "projectionTransform" );
-		this.combinedTransformUniform = super.GetUniformLocation( "combinedTransform" );
-		this.lightPositionUniform = super.GetUniformLocation( "lightPossition" );
-		this.lightColorUniform = super.GetUniformLocation( "lightColor" );
-		this.shineDamperUniform = super.GetUniformLocation( "shineDamper" );
-		this.reflectivityUniform = super.GetUniformLocation( "reflectivity" );
-		this.ambientLightColorUniform = super.GetUniformLocation( "ambientLightColor" );
-		this.cameraPossitionUniform = super.GetUniformLocation( "cameraPossition" );
-		this.isTwoSidedUniform = super.GetUniformLocation( "isTwoSided" );
-		this.useFakeLightingUniform = super.GetUniformLocation( "useFakeLighting" );
-		this.textureSamplerUniform = super.GetUniformLocation( "textureSampler" );
+		this.worldTransformUniform = new Uniform4x( this, "worldTransform" );
+		this.viewTransformUniform = new Uniform4x( this, "viewTransform" );
+		this.projectionTransformUniform = new Uniform4x( this, "projectionTransform" );
+		this.combinedTransformUniform = new Uniform4x( this, "combinedTransform" );
+
+		this.textureSamplerUniform = new Uniform1i( this, "textureSampler" );
+
+		this.lightPositionUniform = new Uniform3f( this, "lightPossition" );
+		this.lightColorUniform = new Uniform3f( this, "lightColor" );
+		this.shineDamperUniform = new Uniform1f( this, "shineDamper" );
+		this.reflectivityUniform = new Uniform1f( this, "reflectivity" );
+		this.useFakeLightingUniform = new Uniform1i( this, "useFakeLighting" );
+		this.ambientLightColorUniform = new Uniform3f( this, "ambientLightColor" );
+
+		this.cameraPossitionUniform = new Uniform3f( this, "cameraPossition" );
+		this.isTwoSidedUniform = new Uniform1i( this, "isTwoSided" );
 	}
 
 	@Override
 	public void SetUniforms( DrawableSceneNode sceneNode, Renderer renderer, Material material )
 	{
-		super.SetUniform4x4( this.worldTransformUniform, sceneNode.GetTransformationMatrix() );
+		this.worldTransformUniform.Set( sceneNode.GetTransformationMatrix() );
 		Matrix4f.mul( renderer.GetCombinedMatrix(), sceneNode.GetTransformationMatrix(), this.fullMatrixTransform );
-		super.SetUniform4x4( this.viewTransformUniform, renderer.GetViewMatrix() );
-		super.SetUniform4x4( this.projectionTransformUniform, renderer.GetProjectionMatrix() );
-		super.SetUniform4x4( this.combinedTransformUniform, this.fullMatrixTransform );
+		this.viewTransformUniform.Set( renderer.GetViewMatrix() );
+		this.projectionTransformUniform.Set( renderer.GetProjectionMatrix() );
+		this.combinedTransformUniform.Set( this.fullMatrixTransform );
 
-		this.SetUniform3( this.ambientLightColorUniform, renderer.GetAmbientLightColor() );
+		this.ambientLightColorUniform.Set( renderer.GetAmbientLightColor() );
 
 		GL13.glActiveTexture( GL13.GL_TEXTURE0 );
 		GL11.glBindTexture( GL11.GL_TEXTURE_2D, material.GetTextures().get( 0 ).GetTextureID() );
-		super.SetUniform1( this.textureSamplerUniform, this.textureSamplerIDtex );
+		this.textureSamplerUniform.Set( this.textureSamplerIDtex );
 
 		List<Light> lights = renderer.GetLights();
 		if( lights.size() > 0 )
 		{
-			super.SetUniform3( this.lightPositionUniform, lights.get( 0 ).GetLocation() );
-			super.SetUniform3( this.lightColorUniform, lights.get( 0 ).GetColor() );
+			this.lightPositionUniform.Set( lights.get( 0 ).GetLocation() );
+			this.lightColorUniform.Set( lights.get( 0 ).GetColor() );
 		}
 
 		if( material instanceof MaterialShineable )
 		{
 			MaterialShineable materialShineable = (MaterialShineable) material;
-			super.SetUniform1( this.shineDamperUniform, materialShineable.GetShineDamper() );
-			super.SetUniform1( this.reflectivityUniform, materialShineable.GetReflectivity() );
+			this.shineDamperUniform.Set( materialShineable.GetShineDamper() );
+			this.reflectivityUniform.Set( materialShineable.GetReflectivity() );
 		}
 
-		super.SetUniform3( this.cameraPossitionUniform, renderer.GetCameraLocation() );
+		this.cameraPossitionUniform.Set( renderer.GetCameraLocation() );
 
-		super.SetUniform1( this.isTwoSidedUniform, material.HasTransparency() ? 1 : 0 );
-		super.SetUniform1( this.useFakeLightingUniform, material.HasTransparency() ? 1 : 0 );
+		this.isTwoSidedUniform.Set( material.HasTransparency() ? 1 : 0 );
+		this.useFakeLightingUniform.Set( material.HasTransparency() ? 1 : 0 );
 	}
 
 }

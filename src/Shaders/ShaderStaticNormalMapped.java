@@ -3,31 +3,29 @@
 
 package Shaders;
 
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL13;
+import org.lwjgl.opengl.*;
 
 import Materials.Material;
 import RenderEngine.Renderer;
 import SceneNodes.DrawableSceneNode;
+import Uniforms.*;
 
 public class ShaderStaticNormalMapped extends ShaderStatic
 {
-	private static final String VERTEX_FILE = "res/shaders/normalMapped.vs";
-	private static final String FRAGMENT_FILE = "res/shaders/normalMapped.fs";
+	private static final String SHADER_PACKAGE_NAME = "normalMapped";
 
-	private int normalSamplerUniform;
+	private Uniform1i normalSamplerUniform;
 	private int normalSamplerIDtex = 1;
-	private int lightAttenuationUniform;
+	private Uniform3f lightAttenuationUniform;
 
 	public ShaderStaticNormalMapped()
 	{
-		super( ShaderStaticNormalMapped.VERTEX_FILE, ShaderStaticNormalMapped.FRAGMENT_FILE );
+		super( SHADER_PACKAGE_NAME );
 	}
 
 	@Override
 	protected void BindAttributes()
 	{
-		super.BindAttributes();
 		super.BindAttribute( 3, "tengent" );
 	}
 
@@ -35,8 +33,8 @@ public class ShaderStaticNormalMapped extends ShaderStatic
 	protected void LoadUniformLocations()
 	{
 		super.LoadUniformLocations();
-		this.normalSamplerUniform = super.GetUniformLocation( "normalSampler" );
-		this.lightAttenuationUniform = super.GetUniformLocation( "lightAttenuation" );
+		this.normalSamplerUniform = new Uniform1i( this, "normalSampler" );
+		this.lightAttenuationUniform = new Uniform3f( this, "lightAttenuation" );
 	}
 
 	@Override
@@ -46,9 +44,9 @@ public class ShaderStaticNormalMapped extends ShaderStatic
 
 		GL13.glActiveTexture( GL13.GL_TEXTURE1 );
 		GL11.glBindTexture( GL11.GL_TEXTURE_2D, material.GetTextures().get( 1 ).GetTextureID() );
-		super.SetUniform1( this.normalSamplerUniform, normalSamplerIDtex );
+		this.normalSamplerUniform.Set( normalSamplerIDtex );
 
-		super.SetUniform3( this.lightAttenuationUniform, renderer.GetLights().get( 0 ).GetAttenuation() );
+		this.lightAttenuationUniform.Set( renderer.GetLights().get( 0 ).GetAttenuation() );
 	}
 
 }

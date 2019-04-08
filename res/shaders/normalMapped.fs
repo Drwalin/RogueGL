@@ -8,6 +8,8 @@ in vec3 norm_;
 in vec3 tang_;
 
 out vec4 fragColor;
+out vec4 fragNormal;
+out vec4 fragMaterial;
 
 uniform sampler2D textureSampler;
 uniform sampler2D normalSampler;
@@ -29,8 +31,8 @@ vec4 GetNormalVectorFromMap( vec2 coord )
 
 void main( void )
 {
-	vec4 textureColour = texture( textureSampler, vec2(texCoord.x,1-texCoord.y) );
-	if( textureColour.a < 0.3 )
+	vec4 textureColorPoint = texture( textureSampler, vec2(texCoord.x,1-texCoord.y) );
+	if( textureColorPoint.a < 0.3 )
 		discard;
 	
 	if( drawingShadow == 0 )
@@ -46,6 +48,7 @@ void main( void )
 		);
 		
 		vec3 unitNormal = normalize( toTangentSpace * GetNormalVectorFromMap(texCoord).xyz );
+		
 		vec3 unitVectorToCamera = normalize( toCameraVector );
 		
 		vec3 totalDiffuse = vec3(0,0,0);
@@ -66,7 +69,13 @@ void main( void )
 		
 		totalDiffuse = max(totalDiffuse, ambientLightColor);
 	
-		fragColor = vec4(totalDiffuse,1) * textureColour + vec4(totalSpecular,0);
+		fragColor = vec4(totalDiffuse,1) * textureColorPoint + vec4(totalSpecular,0);
+		
+		
+		//fragColor = textureColorPoint;
+		
+		fragNormal = vec4( unitNormal*0.5 + 0.5, 1 );
+		fragMaterial = vec4( shineDamper/32, reflectivity/4, 0, 1 ); 
 	}
 	else
 	{
