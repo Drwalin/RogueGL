@@ -44,20 +44,21 @@ public class UniformArray
 		}
 	}
 	
-	public void Set( int id, Object value )
+	public void Set( int id, Object value ) throws ClassCastException
 	{
 		this.uniforms[id].Set( value );
 	}
 	
-	public void Set( List<Object> value )
+	public void Set( Object value ) throws ClassCastException
 	{
-		for( int i = 0; i < value.size() && i < this.uniforms.length; ++i )
+		List<Object> avalue = (List<Object>)value;
+		for( int i = 0; i < avalue.size() && i < this.uniforms.length; ++i )
 		{
-			this.uniforms[i].Set( value.get( i ) );
+			this.uniforms[i].Set( avalue.get( i ) );
 		}
 	}
 	
-	public void Set( Object[] value )
+	public void Set( Object[] value ) throws ClassCastException
 	{
 		for( int i = 0; i < value.length && i < this.uniforms.length; ++i )
 		{

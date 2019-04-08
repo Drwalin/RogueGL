@@ -18,7 +18,7 @@ uniform vec3 lightsPosition[MAX_LIGHT_SOURCES];
 uniform mat4 lightsMatrix[MAX_LIGHT_SOURCES];		// [i] = projectionMaterix * viewMatrix
 uniform vec3 lightsColor[MAX_LIGHT_SOURCES];
 uniform vec3 lightsAttenuation[MAX_LIGHT_SOURCES];
-//uniform sampler2D lightsDepthBuffer[MAX_LIGHT_SOURCES];
+uniform sampler2D lightsDepthBuffer[MAX_LIGHT_SOURCES];
 
 uniform int currentlyUsedLightSorces;
 

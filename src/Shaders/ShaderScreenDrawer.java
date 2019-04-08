@@ -1,6 +1,7 @@
 
 package Shaders;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.lwjgl.opengl.*;
@@ -37,6 +38,7 @@ public class ShaderScreenDrawer extends Shader
 	private UniformArray lightsDepthBufferUniform;
 	
 	private Uniform1i currentlyUsedLightSorcesUniform;
+	
 	
 	public ShaderScreenDrawer()
 	{
@@ -97,11 +99,11 @@ public class ShaderScreenDrawer extends Shader
 		this.cameraMatrixUniform.Set( Matrix4f.mul( renderer.GetCamera().GetProjectionMatrix(), renderer.GetCamera().GetViewMatrix(), null ) );
 		
 		// Set lights data:
-		this.lightsMatrixUniform.Set( (List<Object>)(Object)renderer.GetLightsTransformation() );
-		this.lightsPositionUniform.Set( (List<Object>)(Object)renderer.GetLightsPosition() );
-		this.lightsColorUniform.Set( (List<Object>)(Object)renderer.GetLightsColor() );
-		this.lightsAttenuationUniform.Set( (List<Object>)(Object)renderer.GetLightsAttenuation() );
-		this.lightsDepthBufferUniform.Set( (List<Object>)(Object)renderer.GetLightsDepthBuffers() );
+		this.lightsMatrixUniform.Set( renderer.GetLightsTransformation() );
+		this.lightsPositionUniform.Set( renderer.GetLightsPosition() );
+		this.lightsColorUniform.Set( renderer.GetLightsColor() );
+		this.lightsAttenuationUniform.Set( renderer.GetLightsAttenuation() );
+		this.lightsDepthBufferUniform.Set( renderer.GetLightsDepthBuffers() );
 		this.currentlyUsedLightSorcesUniform.Set( renderer.GetLightsTransformation().size() );
 	}
 }
