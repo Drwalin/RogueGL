@@ -290,6 +290,5 @@ public class MasterRenderer extends Renderer
 		
 		this.screenDrawerShader.Stop();
 		this.squareRawModel.Unbind();
-		
 	}
 }

@@ -1,3 +1,5 @@
+// This file is part of RogueGL game project
+// Copyright (C) 2019 Marek Zalewski aka Drwalin aka DrwalinPCF
 
 package Shaders;
 
@@ -6,6 +8,7 @@ import java.util.List;
 
 import org.lwjgl.opengl.*;
 import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector2f;
 
 import Materials.Material;
 import RenderEngine.MasterRenderer;
@@ -39,6 +42,8 @@ public class ShaderScreenDrawer extends Shader
 	
 	private Uniform1i currentlyUsedLightSorcesUniform;
 	
+	private Uniform2f cameraNearFarUniform;
+	
 	
 	public ShaderScreenDrawer()
 	{
@@ -68,6 +73,8 @@ public class ShaderScreenDrawer extends Shader
 		this.lightsAttenuationUniform = new UniformArray( Uniform3f.class, this, "cameraMatrix", 16  );
 		this.lightsDepthBufferUniform = new UniformArray( Uniform1i.class, this, "lightsDepthBuffer", 16  );
 		this.currentlyUsedLightSorcesUniform = new Uniform1i( this, "currentlyUsedLightSorces" );
+		
+		this.cameraNearFarUniform = new Uniform2f( this, "cameraNearFar" );
 	}
 	
 	@Override
@@ -88,7 +95,7 @@ public class ShaderScreenDrawer extends Shader
 		GL11.glBindTexture( GL11.GL_TEXTURE_2D, renderer.GetCamera().GetFrameBuffer().GetColorTexture( 1 ) );
 		this.cameraNormalBufferUniform.Set( this.cameraNormalBufferTextureId );
 		
-		GL13.glActiveTexture( GL13.GL_TEXTURE0 + this.cameraDepthBufferTextureId );
+		GL13.glActiveTexture( GL13.GL_TEXTURE0 + this.cameraMaterialBufferTextureId );
 		GL11.glBindTexture( GL11.GL_TEXTURE_2D, renderer.GetCamera().GetFrameBuffer().GetColorTexture( 2 ) );
 		this.cameraMaterialBufferUniform.Set( this.cameraMaterialBufferTextureId );
 		
@@ -105,5 +112,8 @@ public class ShaderScreenDrawer extends Shader
 		this.lightsAttenuationUniform.Set( renderer.GetLightsAttenuation() );
 		this.lightsDepthBufferUniform.Set( renderer.GetLightsDepthBuffers() );
 		this.currentlyUsedLightSorcesUniform.Set( renderer.GetLightsTransformation().size() );
+		
+		
+		this.cameraNearFarUniform.Set( new Vector2f( renderer.GetCamera().GetzNear(), renderer.GetCamera().GetzFar() ) );
 	}
 }

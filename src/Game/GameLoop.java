@@ -97,10 +97,10 @@ public class GameLoop
 		renderer.AddSceneNode( pilarNode );
 		renderer.AddSceneNode( boulderNode );
 
-		Light light = new Light( 70, 0.1f, 1000, new Vector3f( -5, 5, 15 ), new Vector3f( 0, 0, 0 ), new Vector3f( 1, 1, 1 ), new Vector3f( .8f, .8f, 1 ), new Vector3f( .9f, .01f, .001f ) );
+		Light light = new Light( 70, 0.1f, 100, new Vector3f( -5, 5, 15 ), new Vector3f( 0, 0, 0 ), new Vector3f( 1, 1, 1 ), new Vector3f( .8f, .8f, 1 ), new Vector3f( .9f, .01f, .001f ) );
 		renderer.AddLight( light );
 
-		Camera camera = new Camera( 70, 0.1f, 1000, new Vector3f( 0, 0, 1 ) );
+		Camera camera = new Camera( 70, 0.1f, 200, new Vector3f( 0, 0, 1 ) );
 
 		while( !Display.isCloseRequested() )
 		{

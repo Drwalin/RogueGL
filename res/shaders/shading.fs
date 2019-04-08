@@ -1,3 +1,5 @@
+// This file is part of RogueGL game project
+// Copyright (C) 2019 Marek Zalewski aka Drwalin aka DrwalinPCF
 
 #version 400 core
 
@@ -12,7 +14,6 @@ out vec4 fragMaterial;
 
 uniform sampler2D textureSampler;
 
-uniform vec3 lightColor;
 uniform float shineDamper;
 uniform float reflectivity;
 
@@ -29,30 +30,9 @@ void main( void )
 	if( textureColorPoint.a < 0.3 )
 		discard;
 	
-	if( drawingShadow == 0 )
-	{
-		vec3 unitNormal = normalize(surfaceNormal);
-		/*
-		vec3 unitToLightVector = normalize(toLightVector);
-		vec3 unitToCameraVector = normalize(toCameraVector);
-		
-		float diffuseBrightness = max( 0.2, dot( unitNormal, unitToLightVector ) );
-		
-		float specularBrightness = abs( dot( reflect( -unitToLightVector, unitNormal ), unitToCameraVector ) );
-		specularBrightness = pow( max( 0, specularBrightness ), shineDamper );
-		
-		vec3 diffuse = max( lightColor * diffuseBrightness, ambientLightColor );
-		
-		fragColor = textureColorPoint * vec4(diffuse,1.0) + vec4( lightColor * ( specularBrightness * reflectivity ), 0 );
-		*/
-		fragColor = textureColorPoint;
-		
-		fragNormal = vec4( unitNormal*0.5 + 0.5, 1 );
-		fragMaterial = vec4( shineDamper/32, reflectivity/4, 0, 1 );
-	}
-	else
-	{
-		// ...
-	}
+	vec3 unitNormal = normalize(surfaceNormal);
 	
+	fragColor = textureColorPoint;
+	fragNormal = vec4( unitNormal*0.5 + 0.5, 1 );
+	fragMaterial = vec4( shineDamper/32.0, reflectivity/4.0, 0, 1 );
 }

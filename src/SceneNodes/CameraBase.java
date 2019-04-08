@@ -17,6 +17,21 @@ public abstract class CameraBase extends SceneNode
 	protected float zNear;
 	protected float zFar;
 
+	public float GetFov()
+	{
+		return this.fov;
+	}
+
+	public float GetzNear()
+	{
+		return this.zNear;
+	}
+
+	public float GetzFar()
+	{
+		return this.zFar;
+	}
+
 	protected Matrix4f projectionMatrix = new Matrix4f();
 	protected Matrix4f viewMatrix;
 
