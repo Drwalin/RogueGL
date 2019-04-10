@@ -85,7 +85,7 @@ public class GameLoop
 		DrawableSceneNode palm1 = new DrawableSceneNode( renderer, palmModel, new Vector3f( 0, 2, -10 ), new Vector3f( 0, 0, 0 ), new Vector3f( 0.2f, 0.2f, 0.2f ) );
 		DrawableSceneNode palm2 = new DrawableSceneNode( renderer, palmModel, new Vector3f( 0, 2, -17 ), new Vector3f( 0, 3.14159f, 0 ), new Vector3f( 0.2f, 0.2f, 0.2f ) );
 		DrawableSceneNode sceneNode = new DrawableSceneNode( renderer, crateModel, new Vector3f( 0, 0, -10 ), new Vector3f( 0.2f, 0.3f, 0.5f ), new Vector3f( 0.01f, 0.01f, 0.01f ) );
-		DrawableSceneNode barrelNode = new DrawableSceneNode( renderer, barrelModel, new Vector3f( 0, 0, 0 ), new Vector3f( 0, 0, 0 ), new Vector3f( 0.1f, 0.1f, 0.1f ) );
+		DrawableSceneNode barrelNode = new DrawableSceneNode( renderer, barrelModel, new Vector3f( 4, 2, 0 ), new Vector3f( 0, 0, 0 ), new Vector3f( 0.1f, 0.1f, 0.1f ) );
 		DrawableSceneNode multiMatNode = new DrawableSceneNode( renderer, multiMatModel, new Vector3f( 0, 0, 30 ), new Vector3f( 0, 0, 0 ), new Vector3f( 1, 1, 1 ) );
 		DrawableSceneNode pilarNode = new DrawableSceneNode( renderer, pilarModel, new Vector3f( 0, 2, 5 ), new Vector3f( 0, 0, 0 ), new Vector3f( 1, 1, 1 ) );
 		DrawableSceneNode boulderNode = new DrawableSceneNode( renderer, boulderModel, new Vector3f( 0, 3, 7 ), new Vector3f( 0, 0, 0 ), new Vector3f( .2f, .2f, .2f ) );
@@ -98,7 +98,7 @@ public class GameLoop
 		renderer.AddSceneNode( pilarNode );
 		renderer.AddSceneNode( boulderNode );
 		
-		Light light = new Light( 30, 0.1f, 300, new Vector3f( 0, 2.3f, 30 ), new Vector3f( -0.1f, 0, 0 ), new Vector3f( 1, 1, 1 ), new Vector3f( 1.0f, 1.f, 1 ), new Vector3f( .9f, .01f, .001f ) );
+		Light light = new Light( 30, 0.1f, 300, new Vector3f( 0, 2.3f, 30 ), new Vector3f( 0.1f, 0, 0 ), new Vector3f( 1, 1, 1 ), new Vector3f( 1, 1, 1 ), new Vector3f( .9f, .01f, .001f ) );
 		renderer.AddLight( light );
 		GameLoop.LIGHT = light;
 		

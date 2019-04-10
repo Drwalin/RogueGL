@@ -4,8 +4,7 @@
 package Shaders;
 
 import org.lwjgl.opengl.*;
-import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Vector2f;
+import org.lwjgl.util.vector.*;
 
 import Materials.Material;
 import RenderEngine.MasterRenderer;
@@ -28,6 +27,8 @@ public class ShaderScreenDrawer extends Shader
 	private Uniform1i cameraMaterialBufferUniform;
 	private final int cameraMaterialBufferTextureId = 3;
 	
+	private Uniform3f ambientLightUniform;
+	
 	private Uniform3f cameraPositionUniform;
 	private Uniform4x cameraMatrixUniform; // invert( projectionMaterix * viewMatrix )
 	
@@ -39,7 +40,7 @@ public class ShaderScreenDrawer extends Shader
 	
 	private Uniform1i currentlyUsedLightSorcesUniform;
 	
-	private Uniform2f cameraNearFarUniform;
+	private Uniform3f cameraNearFarFovUniform;
 	
 	public ShaderScreenDrawer()
 	{
@@ -60,17 +61,19 @@ public class ShaderScreenDrawer extends Shader
 		this.cameraNormalBufferUniform = new Uniform1i( this, "cameraNormalBuffer" );
 		this.cameraMaterialBufferUniform = new Uniform1i( this, "cameraMaterialBuffer" );
 		
+		this.ambientLightUniform = new Uniform3f( this, "ambientLight" );
+		
 		this.cameraPositionUniform = new Uniform3f( this, "cameraPosition" );
 		this.cameraMatrixUniform = new Uniform4x( this, "cameraMatrix" );
 		
 		this.lightsPositionUniform = new UniformArray( Uniform3f.class, this, "lightsPosition", 16 );
 		this.lightsMatrixUniform = new UniformArray( Uniform4x.class, this, "lightsMatrix", 16 );
-		this.lightsColorUniform = new UniformArray( Uniform3f.class, this, "cameraMatrix", 16 );
-		this.lightsAttenuationUniform = new UniformArray( Uniform3f.class, this, "cameraMatrix", 16 );
+		this.lightsColorUniform = new UniformArray( Uniform3f.class, this, "lightsColor", 16 );
+		this.lightsAttenuationUniform = new UniformArray( Uniform3f.class, this, "lightsAttenuation", 16 );
 		this.lightsDepthBufferUniform = new UniformArray( Uniform1i.class, this, "lightsDepthBuffer", 16 );
 		this.currentlyUsedLightSorcesUniform = new Uniform1i( this, "currentlyUsedLightSorces" );
 		
-		this.cameraNearFarUniform = new Uniform2f( this, "cameraNearFar" );
+		this.cameraNearFarFovUniform = new Uniform3f( this, "cameraNearFarFov" );
 	}
 	
 	@Override
@@ -117,6 +120,7 @@ public class ShaderScreenDrawer extends Shader
 		}
 		this.currentlyUsedLightSorcesUniform.Set( renderer.GetLightsTransformation().size() );
 		
-		this.cameraNearFarUniform.Set( new Vector2f( renderer.GetCamera().GetzNear(), renderer.GetCamera().GetzFar() ) );
+		this.cameraNearFarFovUniform.Set( new Vector3f( renderer.GetCamera().GetzNear(), renderer.GetCamera().GetzFar(), renderer.GetCamera().GetFov() ) );
+		this.ambientLightUniform.Set( renderer.GetAmbientLightColor() );
 	}
 }

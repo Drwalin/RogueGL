@@ -7,10 +7,11 @@ const int MAX_LIGHT_SOURCES = 16;
 
 in vec2 texCoord;
 in vec2 screenCoord;
-in vec3 toCamera;
 
-uniform sampler2D cameraColorBuffer;
+uniform vec3 ambientLight;
+
 uniform sampler2D cameraDepthBuffer;
+uniform sampler2D cameraColorBuffer;
 uniform sampler2D cameraNormalBuffer;
 uniform sampler2D cameraMaterialBuffer;
 
@@ -25,9 +26,25 @@ uniform sampler2D lightsDepthBuffer[MAX_LIGHT_SOURCES];
 
 uniform int currentlyUsedLightSorces;
 
-uniform vec2 cameraNearFar;
+uniform vec3 cameraNearFarFov;
 
 out vec4 fragColor;
+
+
+float Linearize( float n, float f, float z )
+{
+	return (2 * n) / (f + n - z * (f - n));
+}
+
+vec3 DecodeLocation( sampler2D depthSampler, vec2 textureCoords )
+{
+	vec4 clipSpaceLocation;
+	clipSpaceLocation.xy = textureCoords * 2.0f - 1.0f;
+	clipSpaceLocation.z = texture(depthSampler, textureCoords).r * 2 - 1;
+	clipSpaceLocation.w = 1.0f;
+	vec4 homogenousLocation = cameraMatrix * clipSpaceLocation;
+	return homogenousLocation.xyz / homogenousLocation.w;
+}
 
 
 const vec2 poissonDisk[4] = vec2[](
@@ -48,56 +65,56 @@ float GetDepthValue( sampler2D sampler, vec2 uv )
 	return value/5;
 }
 
-float Linearize( float n, float f, float z )
+mat3 ProcessLightSource( int id, sampler2D depthSampler, vec3 normal, float shineDamper, float reflectivity, vec3 worldPoint, vec3 lightColor, vec3 lightAttenuation, vec3 unitVectorToCamera, vec3 toLightVector )
 {
-	return (2 * n) / (f + n - z * (f - n));
-}
-
-vec3 DecodeLocation( sampler2D depthSampler, vec2 textureCoords )
-{
-	vec4 clipSpaceLocation;
-	clipSpaceLocation.xy = textureCoords * 2.0f - 1.0f;
-	clipSpaceLocation.z = texture(depthSampler, textureCoords).r * 2 - 1;
-	clipSpaceLocation.w = 1.0f;
-	vec4 homogenousLocation = cameraMatrix * clipSpaceLocation;
-	return homogenousLocation.xyz / homogenousLocation.w;
-}
-
-float ShadowCalculation( vec3 normal, vec3 toLight, sampler2D sampler, mat4 matrix, vec4 _fragPosLightSpace )
-{
-	vec4 fragPosLightSpace = matrix * _fragPosLightSpace;
-    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
-    projCoords = projCoords * 0.5 + 0.5;
-    float closestDepth = GetDepthValue(sampler, projCoords.xy);
-    float bias = 0.00007;  
-    float shadow = projCoords.z-bias < closestDepth  ? 1.0 : 0.0;
-
-    return shadow;
-}
+	mat4 lightMatrix = lightsMatrix[id];
+	vec4 inLightPoint = ( lightMatrix * vec4( worldPoint, 1 ) );
+	//float pointDistance = inLightPoint.z; 
+	inLightPoint.xyz /= inLightPoint.w;
+	inLightPoint.xyz = inLightPoint.xyz * 0.5 + 0.5;
+	float depthValue = GetDepthValue( depthSampler, inLightPoint.xy );
+	
+	if( inLightPoint.z-0.00007 < depthValue && inLightPoint.x > 0 && inLightPoint.y > 0 && inLightPoint.x < 1 && inLightPoint.y < 1 )
+	{
+		float distance = length(toLightVector);
+		float attFactor = lightAttenuation.x + (lightAttenuation.y * distance) + (lightAttenuation.z * (distance * distance));
+		vec3 unitLightVector = normalize( toLightVector );	
+		float nDotl = dot( normalize(normal), normalize(unitLightVector) );
+		float brightness = max( nDotl, 0 );
+		vec3 reflectedLightDirection = reflect( (-unitLightVector), normalize(normal) );
+		float specularFactor = dot( normalize(reflectedLightDirection), normalize(unitVectorToCamera) );
+		specularFactor = max( specularFactor, 0 );
+		float dampedFactor = pow( specularFactor, shineDamper );
+		vec3 totalDiffuse = lightColor * (brightness / attFactor);
+		vec3 totalSpecular = lightColor * (dampedFactor * reflectivity / attFactor);
+		
+		//return mat3(vec3(0.7),vec3(0),vec3(0));		
+		return mat3(totalDiffuse,totalSpecular,vec3(0));
+	}
+	return mat3(vec3(0),vec3(0),vec3(0));
+} 
 
 void main( void )
 {
 	vec3 color = texture( cameraColorBuffer, texCoord ).rgb;
 	vec3 normal = normalize( texture( cameraNormalBuffer, texCoord ).xyz * 2 - 1 );
-	
-	vec3 light = vec3(0.2);
+	vec3 material = texture( cameraMaterialBuffer, texCoord ).xyz;
+	float shineDamper = material.x * 32;
+	float reflectivity = material.y * 4;
 	
 	vec3 worldPoint = DecodeLocation( cameraDepthBuffer, texCoord );
+	vec3 diffuse = vec3(0);
+	vec3 specular = vec3(0);
+	
+	vec3 unitVectorToCamera = normalize(cameraPosition - worldPoint);
 	
 	for( int i = 0; i < currentlyUsedLightSorces; ++i )
 	{
-		vec4 inLightPoint = ( lightsMatrix[i] * vec4( worldPoint, 1 ) );
-		float pointDistance = inLightPoint.z; 
-		inLightPoint.xyz /= inLightPoint.w;
-		inLightPoint.xyz = inLightPoint.xyz * 0.5 + 0.5;
-		float depthValue = texture( lightsDepthBuffer[i], inLightPoint.xy ).r;
 		vec3 toLightVector = lightsPosition[i] - worldPoint;
-		
-		if( ShadowCalculation( normal, toLightVector, lightsDepthBuffer[i], lightsMatrix[i], vec4(worldPoint,1) ) > 0.5 && inLightPoint.x > 0 && inLightPoint.y > 0 && inLightPoint.x < 1 && inLightPoint.y < 1 )
-		{
-			light += vec3(0.4);
-		}
+		mat3 diffSpec = ProcessLightSource( 0, lightsDepthBuffer[i], normal, shineDamper, reflectivity, worldPoint, lightsColor[i], lightsAttenuation[i], unitVectorToCamera, toLightVector );
+		diffuse += max( diffSpec[0], vec3(0) );
+		specular += max( diffSpec[1], vec3(0) );
 	}
 	
-	fragColor = vec4( color * vec3(light), 1 );
+	fragColor = vec4( color * max( diffuse, ambientLight ) + specular, 1 );
 }
