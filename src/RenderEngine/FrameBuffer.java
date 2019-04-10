@@ -4,10 +4,13 @@
 package RenderEngine;
 
 import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.*;
+
+import com.sun.scenario.effect.impl.BufferUtil;
 
 public class FrameBuffer
 {
@@ -93,11 +96,15 @@ public class FrameBuffer
 	{
 		int texture = GL11.glGenTextures();
 		GL11.glBindTexture( GL11.GL_TEXTURE_2D, texture );
-		GL11.glTexImage2D( GL11.GL_TEXTURE_2D, 0, GL14.GL_DEPTH_COMPONENT32, width, height, 0, GL11.GL_DEPTH_COMPONENT, GL11.GL_FLOAT, (ByteBuffer) null );
+		GL11.glTexImage2D( GL11.GL_TEXTURE_2D, 0, GL30.GL_DEPTH_COMPONENT32F, width, height, 0, GL11.GL_DEPTH_COMPONENT, GL11.GL_FLOAT, (ByteBuffer) null );
 		GL11.glTexParameteri( GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR );
 		GL11.glTexParameteri( GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR );
 		GL11.glTexParameteri( GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE );
 		GL11.glTexParameteri( GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE );
+		FloatBuffer color = BufferUtil.newFloatBuffer( 4 );
+		color.put( 0 ).put( 0 ).put( 0 ).put( 0 );
+		color.flip();
+		GL11.glTexParameter( GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_BORDER_COLOR, color ); 
 		GL32.glFramebufferTexture( GL30.GL_FRAMEBUFFER, GL30.GL_DEPTH_ATTACHMENT, texture, 0 );
 		return texture;
 	}

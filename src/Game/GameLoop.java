@@ -98,7 +98,7 @@ public class GameLoop
 		renderer.AddSceneNode( pilarNode );
 		renderer.AddSceneNode( boulderNode );
 		
-		Light light = new Light( 70, 0.1f, 300, new Vector3f( 0, 2.3f, 30 ), new Vector3f( 0.2f, 0, 0 ), new Vector3f( 1, 1, 1 ), new Vector3f( 1.0f, 1.f, 1 ), new Vector3f( .9f, .01f, .001f ) );
+		Light light = new Light( 30, 0.1f, 300, new Vector3f( 0, 2.3f, 30 ), new Vector3f( -0.1f, 0, 0 ), new Vector3f( 1, 1, 1 ), new Vector3f( 1.0f, 1.f, 1 ), new Vector3f( .9f, .01f, .001f ) );
 		renderer.AddLight( light );
 		GameLoop.LIGHT = light;
 		

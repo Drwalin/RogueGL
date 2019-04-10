@@ -266,10 +266,13 @@ public class MasterRenderer extends Renderer
 				for( Map.Entry<Material, Map<Integer, Set<DrawableSceneNode>>> entry3 : entry2.getValue().entrySet() )
 				{
 					material = entry3.getKey();
-					if( material.HasTransparency() )
-						GL11.glDisable( GL11.GL_CULL_FACE );
-					else
-						GL11.glEnable( GL11.GL_CULL_FACE );
+					if( generatingShadows == false )
+					{
+						if( material.HasTransparency() )
+							GL11.glDisable( GL11.GL_CULL_FACE );
+						else
+							GL11.glEnable( GL11.GL_CULL_FACE );
+					}
 					
 					for( Map.Entry<Integer, Set<DrawableSceneNode>> entry4 : entry3.getValue().entrySet() )
 					{
