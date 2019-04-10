@@ -50,16 +50,6 @@ public abstract class Shader
 		
 		this.generatingShadows = false;
 		
-		System.out.println( "Shader loaded:" );
-		System.out.println( "    " + this.vertexShaderID );
-		System.out.println( "    " + this.geometryShaderID );
-		System.out.println( "    " + this.fragmentShaderID );
-		System.out.println( " += " + this.programID );
-		System.out.println( "    " + this.shadowVertexShaderID );
-		System.out.println( "    " + this.shadowGeometryShaderID );
-		System.out.println( "    " + this.shadowFragmentShaderID );
-		System.out.println( " += " + this.shadowProgramID );
-		
 		this.LoadUniformLocations();
 	}
 	

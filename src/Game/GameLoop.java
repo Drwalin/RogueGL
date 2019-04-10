@@ -71,7 +71,7 @@ public class GameLoop
 		}
 		{
 			RawModel model = loader.LoadOBJ( "Barrel", true );
-			barrelModel = new TexturedModel( model, new MaterialShineable( shaderNormalMapped, false, 10.f, 1.f, textureBarrel, textureBarrelNormal ) );
+			barrelModel = new TexturedModel( model, new MaterialShineable( shaderNormalMapped, false, 2.f, .7f, textureBarrel, textureBarrelNormal ) );
 		}
 		{
 			RawModel model = loader.LoadOBJ( "TechDemoMap", true );
@@ -98,15 +98,19 @@ public class GameLoop
 		renderer.AddSceneNode( pilarNode );
 		renderer.AddSceneNode( boulderNode );
 		
-		Light light = new Light( 30, 0.1f, 300, new Vector3f( 0, 2.3f, 30 ), new Vector3f( 0.1f, 0, 0 ), new Vector3f( 1, 1, 1 ), new Vector3f( 1, 1, 1 ), new Vector3f( .9f, .01f, .001f ) );
+		Light light = new Light( 30, 0.1f, 300, new Vector3f( 0, 2.3f, 30 ), new Vector3f( 0.1f, 0, 0 ), new Vector3f( 1, 1, 1 ), new Vector3f( 1, .7f, .4f ), new Vector3f( .2f, .001f, .001f ) );
 		renderer.AddLight( light );
-		GameLoop.LIGHT = light;
+		Light light2 = new Light( 80, 0.1f, 300, new Vector3f( 35, 4.3f, 50 ), new Vector3f( 0.2f, 0, 0 ), new Vector3f( 1, 1, 1 ), new Vector3f( .4f, .7f, 1 ), new Vector3f( .2f, .001f, .001f ) );
+		renderer.AddLight( light2 );
+		GameLoop.LIGHT = light2;
 		
 		Camera camera = new Camera( 70, 0.1f, 200, new Vector3f( 0, 0, 1 ) );
 		
 		while( !Display.isCloseRequested() )
 		{
 			beginTime = GameLoop.GetTime();
+			
+			Vector3f.add( light2.GetRotation(), new Vector3f(0,GameLoop.deltaTime,0), light2.GetRotation() );
 			
 			if( Keyboard.isKeyDown( Keyboard.KEY_ESCAPE ) )
 				break;

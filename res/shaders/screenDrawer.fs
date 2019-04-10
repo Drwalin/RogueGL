@@ -31,6 +31,7 @@ uniform vec3 cameraNearFarFov;
 out vec4 fragColor;
 
 
+
 float Linearize( float n, float f, float z )
 {
 	return (2 * n) / (f + n - z * (f - n));
@@ -46,12 +47,11 @@ vec3 DecodeLocation( sampler2D depthSampler, vec2 textureCoords )
 	return homogenousLocation.xyz / homogenousLocation.w;
 }
 
-
 const vec2 poissonDisk[4] = vec2[](
-  vec2( -0.94201624, -0.39906216 ),
-  vec2( 0.94558609, -0.76890725 ),
-  vec2( -0.094184101, -0.92938870 ),
-  vec2( 0.34495938, 0.29387760 )
+	vec2( -0.94201624, -0.39906216 ),
+	vec2( 0.94558609, -0.76890725 ),
+	vec2( -0.094184101, -0.92938870 ),
+	vec2( 0.34495938, 0.29387760 )
 );
 
 float GetDepthValue( sampler2D sampler, vec2 uv )
@@ -69,7 +69,6 @@ mat3 ProcessLightSource( int id, sampler2D depthSampler, vec3 normal, float shin
 {
 	mat4 lightMatrix = lightsMatrix[id];
 	vec4 inLightPoint = ( lightMatrix * vec4( worldPoint, 1 ) );
-	//float pointDistance = inLightPoint.z; 
 	inLightPoint.xyz /= inLightPoint.w;
 	inLightPoint.xyz = inLightPoint.xyz * 0.5 + 0.5;
 	float depthValue = GetDepthValue( depthSampler, inLightPoint.xy );
@@ -78,17 +77,23 @@ mat3 ProcessLightSource( int id, sampler2D depthSampler, vec3 normal, float shin
 	{
 		float distance = length(toLightVector);
 		float attFactor = lightAttenuation.x + (lightAttenuation.y * distance) + (lightAttenuation.z * (distance * distance));
-		vec3 unitLightVector = normalize( toLightVector );	
-		float nDotl = dot( normalize(normal), normalize(unitLightVector) );
-		float brightness = max( nDotl, 0 );
-		vec3 reflectedLightDirection = reflect( (-unitLightVector), normalize(normal) );
-		float specularFactor = dot( normalize(reflectedLightDirection), normalize(unitVectorToCamera) );
-		specularFactor = max( specularFactor, 0 );
-		float dampedFactor = pow( specularFactor, shineDamper );
+		vec3 unitLightVector = normalize( toLightVector );
+		
+		float brightness = dot( normal, unitLightVector );
+		brightness = ( brightness + 0.5 ) / 1.5;
+		if( brightness <= 0 )
+			return mat3(vec3(0),vec3(0),vec3(0));
+		brightness = max( brightness, 0 ); 
 		vec3 totalDiffuse = lightColor * (brightness / attFactor);
+		
+		vec3 reflectedLightDirection = reflect( -unitLightVector, normal );
+		float specularFactor = dot( reflectedLightDirection, unitVectorToCamera );
+		if( specularFactor <= 0 )
+			return mat3(totalDiffuse,vec3(0),vec3(0));
+		
+		float dampedFactor = pow( specularFactor, shineDamper );
 		vec3 totalSpecular = lightColor * (dampedFactor * reflectivity / attFactor);
 		
-		//return mat3(vec3(0.7),vec3(0),vec3(0));		
 		return mat3(totalDiffuse,totalSpecular,vec3(0));
 	}
 	return mat3(vec3(0),vec3(0),vec3(0));
@@ -111,10 +116,10 @@ void main( void )
 	for( int i = 0; i < currentlyUsedLightSorces; ++i )
 	{
 		vec3 toLightVector = lightsPosition[i] - worldPoint;
-		mat3 diffSpec = ProcessLightSource( 0, lightsDepthBuffer[i], normal, shineDamper, reflectivity, worldPoint, lightsColor[i], lightsAttenuation[i], unitVectorToCamera, toLightVector );
+		mat3 diffSpec = ProcessLightSource( i, lightsDepthBuffer[i], normal, shineDamper, reflectivity, worldPoint, lightsColor[i], lightsAttenuation[i], unitVectorToCamera, toLightVector );
 		diffuse += max( diffSpec[0], vec3(0) );
 		specular += max( diffSpec[1], vec3(0) );
 	}
 	
-	fragColor = vec4( color * max( diffuse, ambientLight ) + specular, 1 );
+	fragColor = vec4( color * max(diffuse,ambientLight) + specular, 1 );
 }
