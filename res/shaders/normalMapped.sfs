@@ -1,0 +1,15 @@
+// This file is part of RogueGL game project
+// Copyright (C) 2019 Marek Zalewski aka Drwalin aka DrwalinPCF
+
+#version 400 core
+
+in vec2 texCoord;
+
+uniform sampler2D textureSampler;
+
+void main( void )
+{
+	vec4 textureColorPoint = texture( textureSampler, vec2(texCoord.x,1-texCoord.y) );
+	if( textureColorPoint.a < 0.3 )
+		discard;
+}

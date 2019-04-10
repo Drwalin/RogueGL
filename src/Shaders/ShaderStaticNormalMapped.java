@@ -16,7 +16,6 @@ public class ShaderStaticNormalMapped extends ShaderStatic
 
 	private Uniform1i normalSamplerUniform;
 	private int normalSamplerIDtex = 1;
-	private Uniform3f lightAttenuationUniform;
 
 	public ShaderStaticNormalMapped()
 	{
@@ -34,7 +33,6 @@ public class ShaderStaticNormalMapped extends ShaderStatic
 	{
 		super.LoadUniformLocations();
 		this.normalSamplerUniform = new Uniform1i( this, "normalSampler" );
-		this.lightAttenuationUniform = new Uniform3f( this, "lightAttenuation" );
 	}
 
 	@Override
@@ -45,8 +43,6 @@ public class ShaderStaticNormalMapped extends ShaderStatic
 		GL13.glActiveTexture( GL13.GL_TEXTURE1 );
 		GL11.glBindTexture( GL11.GL_TEXTURE_2D, material.GetTextures().get( 1 ).GetTextureID() );
 		this.normalSamplerUniform.Set( normalSamplerIDtex );
-
-		this.lightAttenuationUniform.Set( renderer.GetLights().get( 0 ).GetAttenuation() );
 	}
 
 }

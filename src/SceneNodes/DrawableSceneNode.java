@@ -53,7 +53,7 @@ public class DrawableSceneNode extends SceneNode
 		return this.worldTransformationMatrix;
 	}
 
-	public void UpdateWorldTransformationMatrix()
+	public void UpdateRenderTick()
 	{
 		this.worldTransformationMatrix = Maths.CreateTransformMatrix( this.location, this.rotation, this.scale );
 	}

@@ -16,25 +16,25 @@ public abstract class CameraBase extends SceneNode
 	protected float fov;
 	protected float zNear;
 	protected float zFar;
-
+	
 	public float GetFov()
 	{
 		return this.fov;
 	}
-
+	
 	public float GetzNear()
 	{
 		return this.zNear;
 	}
-
+	
 	public float GetzFar()
 	{
 		return this.zFar;
 	}
-
+	
 	protected Matrix4f projectionMatrix = new Matrix4f();
 	protected Matrix4f viewMatrix;
-
+	
 	public CameraBase( FrameBuffer frameBuffer, float fov, float zNear, float zFar, Vector3f location, Vector3f rotation, Vector3f scale )
 	{
 		super( location, rotation, scale );
@@ -46,7 +46,7 @@ public abstract class CameraBase extends SceneNode
 		Mouse.setClipMouseCoordinatesToWindow( true );
 		Mouse.setGrabbed( true );
 	}
-
+	
 	public CameraBase( FrameBuffer frameBuffer, float fov, float zNear, float zFar, Vector3f location, Vector3f rotation )
 	{
 		super( location, rotation );
@@ -58,7 +58,7 @@ public abstract class CameraBase extends SceneNode
 		Mouse.setClipMouseCoordinatesToWindow( true );
 		Mouse.setGrabbed( true );
 	}
-
+	
 	public CameraBase( FrameBuffer frameBuffer, float fov, float zNear, float zFar, Vector3f location )
 	{
 		super( location );
@@ -70,15 +70,15 @@ public abstract class CameraBase extends SceneNode
 		Mouse.setClipMouseCoordinatesToWindow( true );
 		Mouse.setGrabbed( true );
 	}
-
+	
 	public void UpdateMatrices()
 	{
 		// Update projectionMatrix:
-		float aspectRatio = (float) this.frameBuffer.GetWidth() / (float) this.frameBuffer.GetHeight();
-		float y_scale = (float) (1f / Math.tan( Math.toRadians( this.fov / 2f ) ));
+		float aspectRatio = (float)this.frameBuffer.GetWidth() / (float)this.frameBuffer.GetHeight();
+		float y_scale = (float)(1f / Math.tan( Math.toRadians( this.fov / 2f ) ));
 		float x_scale = y_scale / aspectRatio;
 		float frustum_length = this.zFar - this.zNear;
-
+		
 		this.projectionMatrix.setIdentity();
 		this.projectionMatrix.m00 = x_scale;
 		this.projectionMatrix.m11 = y_scale;
@@ -86,17 +86,16 @@ public abstract class CameraBase extends SceneNode
 		this.projectionMatrix.m23 = -1;
 		this.projectionMatrix.m32 = -((2 * this.zNear * this.zFar) / frustum_length);
 		this.projectionMatrix.m33 = 0;
-
+		
 		// Update viewMatrix:
-
 		this.viewMatrix = Maths.CreateViewMatrix( this.location, this.rotation );
 	}
-
+	
 	public Matrix4f GetProjectionMatrix()
 	{
 		return this.projectionMatrix;
 	}
-
+	
 	public Matrix4f GetViewMatrix()
 	{
 		return this.viewMatrix;

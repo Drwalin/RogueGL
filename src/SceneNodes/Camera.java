@@ -117,5 +117,10 @@ public class Camera extends CameraBase
 			this.location = new Vector3f( 0, 2, 0 );
 			this.rotation = new Vector3f( (float) Math.PI * 1.0f / 2.0f, 0, 0 );
 		}
+		if( Keyboard.isKeyDown( Keyboard.KEY_6 ) )
+		{
+			this.location = new Vector3f( GameLoop.LIGHT.GetLocation() );
+			this.rotation = new Vector3f( GameLoop.LIGHT.GetRotation() );
+		}
 	}
 }

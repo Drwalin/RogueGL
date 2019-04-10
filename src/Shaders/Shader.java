@@ -8,15 +8,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-import java.util.List;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL32;
-import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Vector3f;
 
 import Materials.Material;
 import RenderEngine.Renderer;
@@ -54,11 +50,23 @@ public abstract class Shader
 		
 		this.generatingShadows = false;
 		
+		System.out.println( "Shader loaded:" );
+		System.out.println( "    " + this.vertexShaderID );
+		System.out.println( "    " + this.geometryShaderID );
+		System.out.println( "    " + this.fragmentShaderID );
+		System.out.println( " += " + this.programID );
+		System.out.println( "    " + this.shadowVertexShaderID );
+		System.out.println( "    " + this.shadowGeometryShaderID );
+		System.out.println( "    " + this.shadowFragmentShaderID );
+		System.out.println( " += " + this.shadowProgramID );
+		
 		this.LoadUniformLocations();
 	}
 	
 	public static int CreateProgram( Shader shader, int vertex, int geometry, int fragment )
 	{
+		if( vertex < 0 || fragment < 0 )
+			return -1;
 		GL20.glUseProgram( 0 );
 		int programID = GL20.glCreateProgram();
 		GL20.glAttachShader( programID, vertex );

@@ -20,6 +20,11 @@ public abstract class Uniform
 		this.shadowLocation = this.shader.GetShadowUniformLocation( name );
 	}
 	
+	public void Debug()
+	{
+		System.out.println( "Uniform of " + this.shader + " at location: [ " + this.name + ", " + this.regularLocation + ":" + this.shadowLocation + "]" );
+	}
+	
 	public int GetLocation()
 	{
 		if( this.shader.IsGeneratingShadows() )

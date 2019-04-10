@@ -14,6 +14,14 @@ public class UniformArray
 	private final Uniform[] uniforms;
 	private final Class<? extends Uniform> type;
 	
+	public void Debug()
+	{
+		for( Uniform uni : this.uniforms )
+		{
+			uni.Debug();
+		}
+	}
+	
 	public UniformArray( Class<? extends Uniform> type, Shader shader, String name, int count )
 	{
 		this.uniforms = new Uniform[count];
@@ -51,11 +59,16 @@ public class UniformArray
 	
 	public void Set( Object value ) throws ClassCastException
 	{
-		List<Object> avalue = (List<Object>)value;
-		for( int i = 0; i < avalue.size() && i < this.uniforms.length; ++i )
+		if( value instanceof List )
 		{
-			this.uniforms[i].Set( avalue.get( i ) );
+			List<Object> avalue = (List<Object>)value;
+			for( int i = 0; i < avalue.size() && i < this.uniforms.length; ++i )
+			{
+				this.uniforms[i].Set( avalue.get( i ) );
+			}
 		}
+		else
+			throw new ClassCastException( "UniformArray.Set(List<Object> avalue) with primitive void UniformArray.Set(Object value) couldn't cast (Object)value to (List<Object>)avalue" );
 	}
 	
 	public void Set( Object[] value ) throws ClassCastException

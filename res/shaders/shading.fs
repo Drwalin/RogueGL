@@ -17,12 +17,6 @@ uniform sampler2D textureSampler;
 uniform float shineDamper;
 uniform float reflectivity;
 
-uniform vec3 ambientLightColor;
-
-uniform int isTwoSided;
-
-uniform int drawingShadow;
-
 void main( void )
 {
 	vec4 textureColorPoint = texture( textureSampler, texCoord );

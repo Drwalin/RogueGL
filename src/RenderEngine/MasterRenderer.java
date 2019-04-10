@@ -199,21 +199,45 @@ public class MasterRenderer extends Renderer
 	{
 		// Update DrawableSceneNodes world transformation matrices:
 		for( DrawableSceneNode sceneNode : this.sceneNodesBank.keySet() )
-			sceneNode.UpdateWorldTransformationMatrix();
+			sceneNode.UpdateRenderTick();
 		
 		// Draw shadows:
+		this.RenderShadows();
 		
 		// Draw scene:
 		this.RenderScene( camera );
 		
 		// Draw shadows and lights as post process:
 		this.DrawLightsToScreen();
+		
 		// Draw other post processes:
+		
 		
 		// Draw GUI:
 		
+		
 		// Update display manager:
 		DisplayManager.Update();
+	}
+	
+	private void RenderShadows()
+	{
+		this.lightsTransformation.clear();
+		this.lightsPosition.clear();
+		this.lightsColor.clear();
+		this.lightsAttenuation.clear();
+		this.lightsDepthBuffers.clear();
+		
+		for( int i = 0; i < this.lights.size(); ++i )
+		{
+			Light light = this.lights.get( i );
+			this.RenderScene( light );
+			this.lightsTransformation.add( Matrix4f.mul( light.GetProjectionMatrix(), light.GetViewMatrix(), null ) );
+			this.lightsPosition.add( light.GetLocation() );
+			this.lightsColor.add( light.GetColor() );
+			this.lightsAttenuation.add( light.GetAttenuation() );
+			this.lightsDepthBuffers.add( light.GetFrameBuffer().GetDepthTexture() );
+		}
 	}
 	
 	private void RenderScene( CameraBase camera )

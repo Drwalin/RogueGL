@@ -3,9 +3,6 @@
 
 package Shaders;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.lwjgl.opengl.*;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector2f;
@@ -32,10 +29,10 @@ public class ShaderScreenDrawer extends Shader
 	private final int cameraMaterialBufferTextureId = 3;
 	
 	private Uniform3f cameraPositionUniform;
-	private Uniform4x cameraMatrixUniform;		// invert( projectionMaterix * viewMatrix )
+	private Uniform4x cameraMatrixUniform; // invert( projectionMaterix * viewMatrix )
 	
 	private UniformArray lightsPositionUniform;
-	private UniformArray lightsMatrixUniform;			// [i] = projectionMaterix * viewMatrix
+	private UniformArray lightsMatrixUniform; // [i] = projectionMaterix * viewMatrix
 	private UniformArray lightsColorUniform;
 	private UniformArray lightsAttenuationUniform;
 	private UniformArray lightsDepthBufferUniform;
@@ -43,7 +40,6 @@ public class ShaderScreenDrawer extends Shader
 	private Uniform1i currentlyUsedLightSorcesUniform;
 	
 	private Uniform2f cameraNearFarUniform;
-	
 	
 	public ShaderScreenDrawer()
 	{
@@ -65,13 +61,13 @@ public class ShaderScreenDrawer extends Shader
 		this.cameraMaterialBufferUniform = new Uniform1i( this, "cameraMaterialBuffer" );
 		
 		this.cameraPositionUniform = new Uniform3f( this, "cameraPosition" );
-		this.cameraMatrixUniform = new Uniform4x( this,  "cameraMatrix" );
+		this.cameraMatrixUniform = new Uniform4x( this, "cameraMatrix" );
 		
 		this.lightsPositionUniform = new UniformArray( Uniform3f.class, this, "lightsPosition", 16 );
-		this.lightsMatrixUniform = new UniformArray( Uniform4x.class, this, "lightsMatrix", 16  );
-		this.lightsColorUniform = new UniformArray( Uniform3f.class, this, "cameraMatrix", 16  );
-		this.lightsAttenuationUniform = new UniformArray( Uniform3f.class, this, "cameraMatrix", 16  );
-		this.lightsDepthBufferUniform = new UniformArray( Uniform1i.class, this, "lightsDepthBuffer", 16  );
+		this.lightsMatrixUniform = new UniformArray( Uniform4x.class, this, "lightsMatrix", 16 );
+		this.lightsColorUniform = new UniformArray( Uniform3f.class, this, "cameraMatrix", 16 );
+		this.lightsAttenuationUniform = new UniformArray( Uniform3f.class, this, "cameraMatrix", 16 );
+		this.lightsDepthBufferUniform = new UniformArray( Uniform1i.class, this, "lightsDepthBuffer", 16 );
 		this.currentlyUsedLightSorcesUniform = new Uniform1i( this, "currentlyUsedLightSorces" );
 		
 		this.cameraNearFarUniform = new Uniform2f( this, "cameraNearFar" );
@@ -103,16 +99,23 @@ public class ShaderScreenDrawer extends Shader
 		
 		// Set camera data:
 		this.cameraPositionUniform.Set( renderer.GetCameraLocation() );
-		this.cameraMatrixUniform.Set( Matrix4f.mul( renderer.GetCamera().GetProjectionMatrix(), renderer.GetCamera().GetViewMatrix(), null ) );
+		Matrix4f camMatrix = Matrix4f.mul( (Matrix4f)renderer.GetCamera().GetViewMatrix().invert(), (Matrix4f)renderer.GetCamera().GetProjectionMatrix().invert(), null );
+		//camMatrix.invert();
+		this.cameraMatrixUniform.Set( camMatrix );
 		
 		// Set lights data:
 		this.lightsMatrixUniform.Set( renderer.GetLightsTransformation() );
 		this.lightsPositionUniform.Set( renderer.GetLightsPosition() );
 		this.lightsColorUniform.Set( renderer.GetLightsColor() );
 		this.lightsAttenuationUniform.Set( renderer.GetLightsAttenuation() );
-		this.lightsDepthBufferUniform.Set( renderer.GetLightsDepthBuffers() );
+		for( int i = 0; i < renderer.GetLightsDepthBuffers().size(); ++i )
+		{
+			int depthBuffertextureID = 4 + i;
+			GL13.glActiveTexture( GL13.GL_TEXTURE0 + depthBuffertextureID );
+			GL11.glBindTexture( GL11.GL_TEXTURE_2D, renderer.GetLightsDepthBuffers().get( i ) );
+			this.lightsDepthBufferUniform.Set( i, depthBuffertextureID );
+		}
 		this.currentlyUsedLightSorcesUniform.Set( renderer.GetLightsTransformation().size() );
-		
 		
 		this.cameraNearFarUniform.Set( new Vector2f( renderer.GetCamera().GetzNear(), renderer.GetCamera().GetzFar() ) );
 	}
