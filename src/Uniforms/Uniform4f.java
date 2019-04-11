@@ -21,7 +21,7 @@ public class Uniform4f extends Uniform
 		Vector4f dvalue = (Vector4f)value;
 		if( value == null )
 			throw new ClassCastException( "Cannot cast 'value' to Vector4f while setting OpenGL uniform variable" );
-		GL20.glUniform4f( this.GetLocation(), dvalue.x, dvalue.y, dvalue.z, dvalue.z );
+		GL20.glUniform4f( this.GetLocation(), dvalue.x, dvalue.y, dvalue.z, dvalue.w );
 	}
 	
 }

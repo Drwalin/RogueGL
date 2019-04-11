@@ -30,20 +30,26 @@ public class MasterRenderer extends Renderer
 	private Map<DrawableSceneNode, TexturedModel> sceneNodesBank = new HashMap<DrawableSceneNode, TexturedModel>();
 	
 	protected List<Matrix4f> lightsTransformation = new ArrayList<Matrix4f>();
-	protected List<Vector3f> lightsPosition = new ArrayList<Vector3f>();
+	protected List<Vector4f> lightsPosition = new ArrayList<Vector4f>();
 	protected List<Vector3f> lightsColor = new ArrayList<Vector3f>();
-	protected List<Vector3f> lightsAttenuation = new ArrayList<Vector3f>();
+	protected List<Vector4f> lightsAttenuation = new ArrayList<Vector4f>();		// att[3] = cos(fov/2)
 	protected List<Integer> lightsDepthBuffers = new ArrayList<Integer>();
+	protected List<Vector3f> lightsDirection = new ArrayList<Vector3f>();
 	
 	public RawModel squareRawModel;
 	public Shader screenDrawerShader;
+	
+	public List<Vector3f> GetLightsDirection()
+	{
+		return this.lightsDirection;
+	}
 	
 	public List<Matrix4f> GetLightsTransformation()
 	{
 		return this.lightsTransformation;
 	}
 	
-	public List<Vector3f> GetLightsPosition()
+	public List<Vector4f> GetLightsPosition()
 	{
 		return this.lightsPosition;
 	}
@@ -53,7 +59,7 @@ public class MasterRenderer extends Renderer
 		return this.lightsColor;
 	}
 	
-	public List<Vector3f> GetLightsAttenuation()
+	public List<Vector4f> GetLightsAttenuation()
 	{
 		return this.lightsAttenuation;
 	}
@@ -227,16 +233,24 @@ public class MasterRenderer extends Renderer
 		this.lightsColor.clear();
 		this.lightsAttenuation.clear();
 		this.lightsDepthBuffers.clear();
+		this.lightsDirection.clear();
 		
 		for( int i = 0; i < this.lights.size(); ++i )
 		{
 			Light light = this.lights.get( i );
-			this.RenderScene( light );
-			this.lightsTransformation.add( Matrix4f.mul( light.GetProjectionMatrix(), light.GetViewMatrix(), null ) );
-			this.lightsPosition.add( light.GetLocation() );
-			this.lightsColor.add( light.GetColor() );
-			this.lightsAttenuation.add( light.GetAttenuation() );
-			this.lightsDepthBuffers.add( light.GetFrameBuffer().GetDepthTexture() );
+			if( light.IsEnabled() )
+			{
+				if( light.NeedRedraw() )
+				{
+					this.RenderScene( light );
+				}
+				this.lightsTransformation.add( Matrix4f.mul( light.GetProjectionMatrix(), light.GetViewMatrix(), null ) );
+				this.lightsPosition.add( new Vector4f( light.GetLocation().x, light.GetLocation().y, light.GetLocation().z, (float)Math.cos( Math.toRadians( (double)light.GetInnerSpotAngle()/2 ) ) ) );
+				this.lightsColor.add( light.GetColor() );
+				this.lightsAttenuation.add( new Vector4f( light.GetAttenuation().x, light.GetAttenuation().y, light.GetAttenuation().z, (float)Math.cos( Math.toRadians( (double)light.GetFov()/2 ) ) ) );
+				this.lightsDepthBuffers.add( light.GetFrameBuffer().GetDepthTexture() );
+				this.lightsDirection.add( light.GetForward() );
+			}
 		}
 	}
 	

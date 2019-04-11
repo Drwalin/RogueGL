@@ -105,4 +105,10 @@ public abstract class CameraBase extends SceneNode
 	{
 		return this.frameBuffer;
 	}
+	
+	public Vector3f GetForward()
+	{
+		Vector4f r = Matrix4f.transform( Matrix4f.invert( this.viewMatrix,  null ), new Vector4f(0,0,-1,0), null );
+		return new Vector3f( r.x, r.y, r.z );
+	}
 }

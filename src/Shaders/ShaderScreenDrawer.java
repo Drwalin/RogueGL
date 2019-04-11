@@ -37,6 +37,7 @@ public class ShaderScreenDrawer extends Shader
 	private UniformArray lightsPositionUniform;
 	private UniformArray lightsMatrixUniform; // [i] = projectionMaterix * viewMatrix
 	private UniformArray lightsColorUniform;
+	private UniformArray lightsDirectionUniform;
 	private UniformArray lightsAttenuationUniform;
 	private UniformArray lightsDepthBufferUniform;
 	
@@ -69,10 +70,11 @@ public class ShaderScreenDrawer extends Shader
 		this.cameraPositionUniform = new Uniform3f( this, "cameraPosition" );
 		this.cameraMatrixUniform = new Uniform4x( this, "cameraMatrix" );
 		
-		this.lightsPositionUniform = new UniformArray( Uniform3f.class, this, "lightsPosition", 16 );
+		this.lightsPositionUniform = new UniformArray( Uniform4f.class, this, "lightsPosition", 16 );
 		this.lightsMatrixUniform = new UniformArray( Uniform4x.class, this, "lightsMatrix", 16 );
 		this.lightsColorUniform = new UniformArray( Uniform3f.class, this, "lightsColor", 16 );
-		this.lightsAttenuationUniform = new UniformArray( Uniform3f.class, this, "lightsAttenuation", 16 );
+		this.lightsDirectionUniform = new UniformArray( Uniform3f.class, this, "lightsDirection", 16 );
+		this.lightsAttenuationUniform = new UniformArray( Uniform4f.class, this, "lightsAttenuation", 16 );
 		this.lightsDepthBufferUniform = new UniformArray( Uniform1i.class, this, "lightsDepthBuffer", 16 );
 		this.currentlyUsedLightSorcesUniform = new Uniform1i( this, "currentlyUsedLightSorces" );
 		
@@ -117,6 +119,7 @@ public class ShaderScreenDrawer extends Shader
 		this.lightsMatrixUniform.Set( renderer.GetLightsTransformation() );
 		this.lightsPositionUniform.Set( renderer.GetLightsPosition() );
 		this.lightsColorUniform.Set( renderer.GetLightsColor() );
+		this.lightsDirectionUniform.Set(  renderer.GetLightsDirection() );
 		this.lightsAttenuationUniform.Set( renderer.GetLightsAttenuation() );
 		for( int i = 0; i < renderer.GetLightsDepthBuffers().size(); ++i )
 		{

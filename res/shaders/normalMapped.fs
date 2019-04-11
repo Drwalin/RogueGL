@@ -20,7 +20,7 @@ uniform float reflectivity;
 
 vec4 GetNormalVectorFromMap( vec2 coord )
 {
-	return texture( normalSampler, vec2(coord.x,1-coord.y), -3.11 ) * 2 - 1;
+	return texture( normalSampler, vec2(coord.x,1-coord.y), -1.11 ) * 2 - 1;
 }
 
 void main( void )

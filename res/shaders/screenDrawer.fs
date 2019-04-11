@@ -19,10 +19,11 @@ uniform sampler2D cameraMaterialBuffer;
 uniform vec3 cameraPosition;
 uniform mat4 cameraMatrix;			// invert( projectionMaterix * viewMatrix )
 
-uniform vec3 lightsPosition[MAX_LIGHT_SOURCES]; 
+uniform vec4 lightsPosition[MAX_LIGHT_SOURCES];		// [i].w = cos( inner spot angle / 2 ) 
 uniform mat4 lightsMatrix[MAX_LIGHT_SOURCES];		// [i] = projectionMaterix * viewMatrix
 uniform vec3 lightsColor[MAX_LIGHT_SOURCES];
-uniform vec3 lightsAttenuation[MAX_LIGHT_SOURCES];
+uniform vec3 lightsDirection[MAX_LIGHT_SOURCES];
+uniform vec4 lightsAttenuation[MAX_LIGHT_SOURCES];
 uniform sampler2D lightsDepthBuffer[MAX_LIGHT_SOURCES];
 
 uniform int currentlyUsedLightSorces;
@@ -66,7 +67,7 @@ float GetDepthValue( sampler2D sampler, vec2 uv )
 	return value/5;
 }
 
-mat3 ProcessLightSource( int id, sampler2D depthSampler, vec3 normal, float shineDamper, float reflectivity, vec3 worldPoint, vec3 lightColor, vec3 lightAttenuation, vec3 unitVectorToCamera, vec3 toLightVector )
+mat3 ProcessLightSource( int id, sampler2D depthSampler, vec3 normal, float shineDamper, float reflectivity, vec3 worldPoint, vec3 lightColor, vec4 lightAttenuation, vec3 unitVectorToCamera, vec3 toLightVector, vec4 lightLocation )
 {
 	mat4 lightMatrix = lightsMatrix[id];
 	vec4 inLightPoint = ( lightMatrix * vec4( worldPoint, 1 ) );
@@ -74,18 +75,27 @@ mat3 ProcessLightSource( int id, sampler2D depthSampler, vec3 normal, float shin
 	inLightPoint.xyz = inLightPoint.xyz * 0.5 + 0.5;
 	float depthValue = GetDepthValue( depthSampler, inLightPoint.xy );
 	
+	float distance = length(toLightVector);
+	vec3 unitLightVector = normalize( toLightVector );
+	vec3 lightSpotDirection = lightsDirection[id];
+	
+	float spotDot = -dot(unitLightVector,lightSpotDirection); 
+	if( spotDot < lightAttenuation.w )
+	{
+		return mat3(0);
+	}
+	float spotAngleMultiplier = clamp( (spotDot-lightAttenuation.w) / (lightLocation.w - lightAttenuation.w), 0, 1 );
+	
 	if( inLightPoint.z-0.00007 < depthValue && inLightPoint.x > 0 && inLightPoint.y > 0 && inLightPoint.x < 1 && inLightPoint.y < 1 )
 	{
-		float distance = length(toLightVector);
 		float attFactor = lightAttenuation.x + (lightAttenuation.y * distance) + (lightAttenuation.z * (distance * distance));
-		vec3 unitLightVector = normalize( toLightVector );
 		
 		float brightness = dot( normal, unitLightVector );
 		brightness = ( brightness + 0.5 ) / 1.5;
 		if( brightness <= 0 )
 			return mat3(vec3(0),vec3(0),vec3(0));
 		brightness = max( brightness, 0 ); 
-		vec3 totalDiffuse = lightColor * (brightness / attFactor);
+		vec3 totalDiffuse = lightColor * spotAngleMultiplier * (brightness / attFactor);
 		
 		vec3 reflectedLightDirection = reflect( -unitLightVector, normal );
 		float specularFactor = dot( reflectedLightDirection, unitVectorToCamera );
@@ -93,7 +103,7 @@ mat3 ProcessLightSource( int id, sampler2D depthSampler, vec3 normal, float shin
 			return mat3(totalDiffuse,vec3(0),vec3(0));
 		
 		float dampedFactor = pow( specularFactor, shineDamper );
-		vec3 totalSpecular = lightColor * (dampedFactor * reflectivity / attFactor);
+		vec3 totalSpecular = lightColor * spotAngleMultiplier * (dampedFactor * reflectivity / attFactor);
 		
 		return mat3(totalDiffuse,totalSpecular,vec3(0));
 	}
@@ -117,8 +127,8 @@ void main( void )
 	
 	for( int i = 0; i < currentlyUsedLightSorces; ++i )
 	{
-		vec3 toLightVector = lightsPosition[i] - worldPoint;
-		mat3 diffSpec = ProcessLightSource( i, lightsDepthBuffer[i], normal, shineDamper, reflectivity, worldPoint, lightsColor[i], lightsAttenuation[i], unitVectorToCamera, toLightVector );
+		vec3 toLightVector = lightsPosition[i].xyz - worldPoint;
+		mat3 diffSpec = ProcessLightSource( i, lightsDepthBuffer[i], normal, shineDamper, reflectivity, worldPoint, lightsColor[i], lightsAttenuation[i], unitVectorToCamera, toLightVector, lightsPosition[i] );
 		float d = dot( normalize( toLightVector ), flatNormal );
 		if( d > 0 )
 		{
