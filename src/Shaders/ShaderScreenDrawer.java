@@ -20,12 +20,14 @@ public class ShaderScreenDrawer extends Shader
 	
 	private Uniform1i cameraColorBufferUniform;
 	private final int cameraColorBufferTextureId = 0;
-	private Uniform1i cameraDepthBufferUniform;
-	private final int cameraDepthBufferTextureId = 1;
 	private Uniform1i cameraNormalBufferUniform;
-	private final int cameraNormalBufferTextureId = 2;
+	private final int cameraNormalBufferTextureId = 1;
+	private Uniform1i cameraFlatNormalBufferUniform;
+	private final int cameraFlatNormalBufferTextureId = 2;
 	private Uniform1i cameraMaterialBufferUniform;
 	private final int cameraMaterialBufferTextureId = 3;
+	private Uniform1i cameraDepthBufferUniform;
+	private final int cameraDepthBufferTextureId = 4;
 	
 	private Uniform3f ambientLightUniform;
 	
@@ -60,6 +62,7 @@ public class ShaderScreenDrawer extends Shader
 		this.cameraDepthBufferUniform = new Uniform1i( this, "cameraDepthBuffer" );
 		this.cameraNormalBufferUniform = new Uniform1i( this, "cameraNormalBuffer" );
 		this.cameraMaterialBufferUniform = new Uniform1i( this, "cameraMaterialBuffer" );
+		this.cameraFlatNormalBufferUniform = new Uniform1i( this, "cameraFlatNormalBuffer" );
 		
 		this.ambientLightUniform = new Uniform3f( this, "ambientLight" );
 		
@@ -83,20 +86,24 @@ public class ShaderScreenDrawer extends Shader
 		
 		// Set textures from camera:
 		GL13.glActiveTexture( GL13.GL_TEXTURE0 + this.cameraColorBufferTextureId );
-		GL11.glBindTexture( GL11.GL_TEXTURE_2D, renderer.GetCamera().GetFrameBuffer().GetColorTexture( 0 ) );
+		GL11.glBindTexture( GL11.GL_TEXTURE_2D, renderer.GetCamera().GetFrameBuffer().GetColorTexture( this.cameraColorBufferTextureId ) );
 		this.cameraColorBufferUniform.Set( this.cameraColorBufferTextureId );
+		
+		GL13.glActiveTexture( GL13.GL_TEXTURE0 + this.cameraNormalBufferTextureId );
+		GL11.glBindTexture( GL11.GL_TEXTURE_2D, renderer.GetCamera().GetFrameBuffer().GetColorTexture( this.cameraNormalBufferTextureId ) );
+		this.cameraNormalBufferUniform.Set( this.cameraNormalBufferTextureId );
+		
+		GL13.glActiveTexture( GL13.GL_TEXTURE0 + this.cameraFlatNormalBufferTextureId );
+		GL11.glBindTexture( GL11.GL_TEXTURE_2D, renderer.GetCamera().GetFrameBuffer().GetColorTexture( this.cameraFlatNormalBufferTextureId ) );
+		this.cameraFlatNormalBufferUniform.Set( this.cameraFlatNormalBufferTextureId );
+		
+		GL13.glActiveTexture( GL13.GL_TEXTURE0 + this.cameraMaterialBufferTextureId );
+		GL11.glBindTexture( GL11.GL_TEXTURE_2D, renderer.GetCamera().GetFrameBuffer().GetColorTexture( this.cameraMaterialBufferTextureId ) );
+		this.cameraMaterialBufferUniform.Set( this.cameraMaterialBufferTextureId );
 		
 		GL13.glActiveTexture( GL13.GL_TEXTURE0 + this.cameraDepthBufferTextureId );
 		GL11.glBindTexture( GL11.GL_TEXTURE_2D, renderer.GetCamera().GetFrameBuffer().GetDepthTexture() );
 		this.cameraDepthBufferUniform.Set( this.cameraDepthBufferTextureId );
-		
-		GL13.glActiveTexture( GL13.GL_TEXTURE0 + this.cameraNormalBufferTextureId );
-		GL11.glBindTexture( GL11.GL_TEXTURE_2D, renderer.GetCamera().GetFrameBuffer().GetColorTexture( 1 ) );
-		this.cameraNormalBufferUniform.Set( this.cameraNormalBufferTextureId );
-		
-		GL13.glActiveTexture( GL13.GL_TEXTURE0 + this.cameraMaterialBufferTextureId );
-		GL11.glBindTexture( GL11.GL_TEXTURE_2D, renderer.GetCamera().GetFrameBuffer().GetColorTexture( 2 ) );
-		this.cameraMaterialBufferUniform.Set( this.cameraMaterialBufferTextureId );
 		
 		assert ShaderScreenDrawer.MAX_LIGHT_SOURCES < renderer.GetLightsTransformation().size();
 		
@@ -113,7 +120,7 @@ public class ShaderScreenDrawer extends Shader
 		this.lightsAttenuationUniform.Set( renderer.GetLightsAttenuation() );
 		for( int i = 0; i < renderer.GetLightsDepthBuffers().size(); ++i )
 		{
-			int depthBuffertextureID = 4 + i;
+			int depthBuffertextureID = 5 + i;
 			GL13.glActiveTexture( GL13.GL_TEXTURE0 + depthBuffertextureID );
 			GL11.glBindTexture( GL11.GL_TEXTURE_2D, renderer.GetLightsDepthBuffers().get( i ) );
 			this.lightsDepthBufferUniform.Set( i, depthBuffertextureID );

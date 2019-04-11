@@ -9,6 +9,7 @@ in vec3 tang_;
 
 out vec4 fragColor;
 out vec4 fragNormal;
+out vec4 fragFlatNormal;
 out vec4 fragMaterial;
 
 uniform sampler2D textureSampler;
@@ -42,5 +43,6 @@ void main( void )
 	
 	fragColor = textureColorPoint;
 	fragNormal = vec4( unitNormal*0.5 + 0.5, 1 );
+	fragFlatNormal = vec4( norm*0.5 + 0.5, 1 );
 	fragMaterial = vec4( shineDamper/32.0, reflectivity/4.0, 0, 1 ); 
 }

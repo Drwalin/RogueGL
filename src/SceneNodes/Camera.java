@@ -16,17 +16,17 @@ public class Camera extends CameraBase
 {
 	public Camera( float fov, float zNear, float zFar, Vector3f location, Vector3f rotation, Vector3f scale )
 	{
-		super( new FrameBuffer(Display.getWidth(),Display.getHeight(),true,3), fov, zNear, zFar, location, rotation, scale );		
+		super( new FrameBuffer(Display.getWidth(),Display.getHeight(),true,4), fov, zNear, zFar, location, rotation, scale );		
 	}
 	
 	public Camera( float fov, float zNear, float zFar, Vector3f location, Vector3f rotation )
 	{
-		super( new FrameBuffer(Display.getWidth(),Display.getHeight(),true,3), fov, zNear, zFar, location, rotation );		
+		super( new FrameBuffer(Display.getWidth(),Display.getHeight(),true,4), fov, zNear, zFar, location, rotation );		
 	}
 	
 	public Camera( float fov, float zNear, float zFar, Vector3f location )
 	{
-		super( new FrameBuffer(Display.getWidth(),Display.getHeight(),true,3), fov, zNear, zFar, location );		
+		super( new FrameBuffer(Display.getWidth(),Display.getHeight(),true,4), fov, zNear, zFar, location );		
 	}
 
 

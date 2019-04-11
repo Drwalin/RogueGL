@@ -10,6 +10,7 @@ in vec3 toCameraVector;
 
 out vec4 fragColor;
 out vec4 fragNormal;
+out vec4 fragFlatNormal;
 out vec4 fragMaterial;
 
 uniform sampler2D textureSampler;
@@ -27,6 +28,7 @@ void main( void )
 	vec3 unitNormal = normalize(surfaceNormal);
 	
 	fragColor = textureColorPoint;
+	fragFlatNormal = vec4( unitNormal*0.5 + 0.5, 1 );
 	fragNormal = vec4( unitNormal*0.5 + 0.5, 1 );
 	fragMaterial = vec4( shineDamper/32.0, reflectivity/4.0, 0, 1 );
 }
