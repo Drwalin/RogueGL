@@ -31,7 +31,7 @@ public class LoaderOBJ
 		FileReader file = null;
 		try
 		{
-			file = new FileReader( new File( "res/models/static/" + fileName + ".obj" ) );
+			file = new FileReader( new File( fileName ) );
 		} catch( FileNotFoundException e )
 		{
 			System.out.println( "File not found!" );

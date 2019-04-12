@@ -35,14 +35,14 @@ public class Loader
 
 	public RawModel LoadOBJ( String fileName )
 	{
-		RawModel model = LoaderOBJ.Load( fileName );
+		RawModel model = LoaderOBJ.Load( "res/models/static/"+fileName+".obj" );
 		this.models.add( model );
 		return model;
 	}
 
 	public RawModel LoadOBJ( String fileName, boolean useTangent )
 	{
-		RawModel model = LoaderOBJ.Load( fileName, useTangent );
+		RawModel model = LoaderOBJ.Load( "res/models/static/"+fileName+".obj", useTangent );
 		this.models.add( model );
 		return model;
 	}

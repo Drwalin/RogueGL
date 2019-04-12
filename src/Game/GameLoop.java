@@ -80,7 +80,7 @@ public class GameLoop
 			{
 				//RawModel model = loader.LoadOBJ( "TechDemoMap", true );
 				RawModel model = loader.LoadCOLLADA( "static/TechDemoMap", true );
-				multiMatModel = new TexturedModel( model, new MaterialShineable( shader, false, 7.0f, 0.33f, textureCrate ), new MaterialShineable( shader, false, 8.0f, 0.43f, textureBarrelNormal ) );
+				multiMatModel = new TexturedModel( model, new MaterialShineable( shaderNormalMapped, false, 12.0f, 0.93f, textureCrate, textureCrateNormal ), new MaterialShineable( shaderNormalMapped, false, 11.0f, 0.93f, textureBarrel, textureBarrelNormal ) );
 			}
 			{
 				RawModel model = loader.LoadOBJ( "pilar", true );

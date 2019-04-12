@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.lwjgl.util.vector.Vector2f;
+import org.lwjgl.util.vector.Vector3f;
+
 import Animations.AnimationSet;
 import Animations.Armature;
 import Materials.Material;
@@ -112,6 +115,80 @@ public class LoaderCOLLADA
 					}
 				}
 			}
+		}
+		
+		// optimize mesh
+		{
+		}
+		
+		if( calculateTangents == true )
+		{
+			List<Float> tangents = new ArrayList<Float>();
+			List<Float> vertices = vertexData.get( "VERTEX" );
+			List<Float> uvs = vertexData.get( "TEXCOORD" );
+			
+			int combinedVerticesNumber = vertices.size()/3;
+
+			Vector3f[] tangent = new Vector3f[combinedVerticesNumber];
+
+			for( int i = 0; i < tangent.length; ++i )
+				tangent[i] = new Vector3f( 0, 0, 0 );
+
+			Vector3f p1 = new Vector3f(), p2 = new Vector3f(), p3 = new Vector3f();
+			Vector2f uv1 = new Vector2f(), uv2 = new Vector2f(), uv3 = new Vector2f();
+			Vector2f uvA = new Vector2f(), uvB = new Vector2f();
+			Vector3f pA = new Vector3f(), pB = new Vector3f();
+
+			for( int triangleID = 0; triangleID < vertexIndices.size(); triangleID += 3 )
+			{
+				int v1i = vertexIndices.get(triangleID);
+				int v2i = vertexIndices.get(triangleID + 1);
+				int v3i = vertexIndices.get(triangleID + 2);
+
+				p1.x = vertices.get(v1i * 3);
+				p1.y = vertices.get(v1i * 3 + 1);
+				p1.z = vertices.get(v1i * 3 + 2);
+				p2.x = vertices.get(v2i * 3);
+				p2.y = vertices.get(v2i * 3 + 1);
+				p2.z = vertices.get(v2i * 3 + 2);
+				p3.x = vertices.get(v3i * 3);
+				p3.y = vertices.get(v3i * 3 + 1);
+				p3.z = vertices.get(v3i * 3 + 2);
+
+				uv1.x = uvs.get(v1i * 2);
+				uv1.y = uvs.get(v1i * 2 + 1);
+				uv2.x = uvs.get(v2i * 2);
+				uv2.y = uvs.get(v2i * 2 + 1);
+				uv3.x = uvs.get(v3i * 2);
+				uv3.y = uvs.get(v3i * 2 + 1);
+
+				Vector3f.sub( p2, p1, pA );
+				Vector3f.sub( p3, p1, pB );
+
+				Vector2f.sub( uv2, uv1, uvA );
+				Vector2f.sub( uv3, uv1, uvB );
+
+				float r = 1.0F / (uvA.x * uvB.y - uvB.x * uvA.y);
+				pA.scale( uvB.y );
+				pB.scale( uvA.y );
+				Vector3f tang = Vector3f.sub( pA, pB, null );
+				tang.scale( r );
+
+				Vector3f.add( tangent[v1i], tang, tangent[v1i] );
+				Vector3f.add( tangent[v2i], tang, tangent[v2i] );
+				Vector3f.add( tangent[v3i], tang, tangent[v3i] );
+			}
+
+			for( int i = 0; i < combinedVerticesNumber; ++i )
+			{
+				tangent[i].normalise();
+				
+				tangents.add( tangent[i].x );
+				tangents.add( tangent[i].y );
+				tangents.add( tangent[i].z );
+			}
+			
+			vertexData.put( "TANGENT", tangents );
 		}
 		
 		// load to VBO and VAO
