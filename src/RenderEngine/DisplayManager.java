@@ -31,13 +31,18 @@ public class DisplayManager
 			Display.setDisplayMode( new DisplayMode( DisplayManager.WIDTH, DisplayManager.HEIGHT ) );
 			Display.create( new PixelFormat(), attribs );
 			Display.setTitle( DisplayManager.TITLE );
-//			Display.setVSyncEnabled( true );
-//			Display.sync( DisplayManager.FPS_CAP );
 		} catch( LWJGLException e )
 		{
 			e.printStackTrace();
 		}
 		GL11.glViewport( 0, 0, DisplayManager.WIDTH, DisplayManager.HEIGHT );
+	}
+	
+	public void VSync( boolean value )
+	{
+		if( value == true )
+			Display.sync( DisplayManager.FPS_CAP );
+		Display.setVSyncEnabled( value );
 	}
 
 	public static void Update()

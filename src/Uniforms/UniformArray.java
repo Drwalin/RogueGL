@@ -61,6 +61,7 @@ public class UniformArray
 	{
 		if( value instanceof List )
 		{
+			@SuppressWarnings("unchecked")
 			List<Object> avalue = (List<Object>)value;
 			for( int i = 0; i < avalue.size() && i < this.uniforms.length; ++i )
 			{

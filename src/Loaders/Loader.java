@@ -47,6 +47,14 @@ public class Loader
 		return model;
 	}
 
+	public RawModel LoadCOLLADA( String fileName, boolean useTangent ) throws Exception
+	{
+		NodeXML rootNode = LoaderXML.Load( "res/models/"+fileName+".dae" );
+		RawModel model = LoaderCOLLADA.LoadModel( rootNode, useTangent );
+		this.models.add( model );
+		return model;
+	}
+
 	static public int CreateVAO()
 	{
 		int vaoID = GL30.glGenVertexArrays();
