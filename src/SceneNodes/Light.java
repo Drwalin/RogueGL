@@ -30,7 +30,7 @@ public class Light extends CameraBase
 	{
 		if( this.redrawFrameCooldown-- <= 0 )
 		{
-			this.redrawFrameCooldown = 1;
+			this.redrawFrameCooldown = 0;
 			return true;
 		}
 		return false;

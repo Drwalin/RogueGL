@@ -50,6 +50,7 @@ public class GameLoop
 			TexturedModel barrelModel = null;
 			TexturedModel multiMatModel = null;
 			TexturedModel boulderModel = null;
+			TexturedModel citadelModel = null;
 			
 			TextureInstance texturePalm = loader.LoadTexture( "fern" );
 			TextureInstance textureCrate = loader.LoadTexture( "crate" );
@@ -60,6 +61,7 @@ public class GameLoop
 			TextureInstance textureBarrelNormal = loader.LoadTexture( "barrelNormal" );
 			TextureInstance texturePilar = loader.LoadTexture( "pilarMarbleLightPink" );
 			TextureInstance texturePilarNormal = loader.LoadTexture( "pilarNormal" );
+			TextureInstance textureRustyMetal = loader.LoadTexture( "Rusty Metal-063" );
 			
 			{
 				RawModel model = loader.LoadOBJ( "fern" );
@@ -86,6 +88,10 @@ public class GameLoop
 				RawModel model = loader.LoadOBJ( "pilar", true );
 				pilarModel = new TexturedModel( model, new MaterialShineable( shaderNormalMapped, false, 2.f, .7f, texturePilar, texturePilarNormal ) );
 			}
+			{
+				RawModel model = loader.LoadCOLLADA( "Citadel-Tower", true );
+				citadelModel = new TexturedModel( model, new MaterialShineable( shader, false, 2.f, .7f, textureRustyMetal ), new MaterialShineable( shader, false, 2.f, .7f, textureCrate ) );
+			}
 			
 			DrawableSceneNode palm1 = new DrawableSceneNode( renderer, palmModel, new Vector3f( 0, 2, 10 ), new Vector3f( 0, 0, 0 ), new Vector3f( 0.2f, 0.2f, 0.2f ) );
 			DrawableSceneNode palm2 = new DrawableSceneNode( renderer, palmModel, new Vector3f( 0, 2, 17 ), new Vector3f( 0, 3.14159f, 0 ), new Vector3f( 0.2f, 0.2f, 0.2f ) );
@@ -94,6 +100,7 @@ public class GameLoop
 			DrawableSceneNode multiMatNode = new DrawableSceneNode( renderer, multiMatModel, new Vector3f( 0, 0, 30 ), new Vector3f( 0, 0, 0 ), new Vector3f( 1, 1, 1 ) );
 			DrawableSceneNode pilarNode = new DrawableSceneNode( renderer, pilarModel, new Vector3f( 0, 2, 5 ), new Vector3f( 0, 0, 0 ), new Vector3f( 1, 1, 1 ) );
 			DrawableSceneNode boulderNode = new DrawableSceneNode( renderer, boulderModel, new Vector3f( 0, 3, 7 ), new Vector3f( 0, 0, 0 ), new Vector3f( .2f, .2f, .2f ) );
+			DrawableSceneNode citadelNode = new DrawableSceneNode( renderer, citadelModel, new Vector3f( -20, 0, 45 ), new Vector3f( -(float)Math.PI/2, 0, 0 ), new Vector3f( .1f, .1f, .1f ) );
 			
 			renderer.AddSceneNode( palm1 );
 			renderer.AddSceneNode( palm2 );
@@ -102,12 +109,17 @@ public class GameLoop
 			renderer.AddSceneNode( multiMatNode );
 			renderer.AddSceneNode( pilarNode );
 			renderer.AddSceneNode( boulderNode );
+			renderer.AddSceneNode( citadelNode );
 			
 			Light light = new Light( 30, 0.1f, 300, new Vector3f( 0, 2.3f, 30 ), new Vector3f( 0.1f, 0, 0 ), new Vector3f( 1, 1, 1 ), new Vector3f( 1, .7f, .4f ), new Vector3f( .2f, .001f, .001f ), 10 );
 			renderer.AddLight( light );
+			GameLoop.LIGHT = light;
 			Light light2 = new Light( 80, 0.1f, 300, new Vector3f( 35, 4.3f, 50 ), new Vector3f( 0.2f, 0, 0 ), new Vector3f( 1, 1, 1 ), new Vector3f( .4f, .7f, 1 ), new Vector3f( .2f, .001f, .001f ), 0 );
 			renderer.AddLight( light2 );
-			GameLoop.LIGHT = light2;
+			Light light3 = new Light( 90, 0.1f, 300, new Vector3f( -20, 30, 45 ), new Vector3f( 0.8f, 0, 0 ), new Vector3f( 1, 1, 1 ), new Vector3f( 1, .4f, .1f ), new Vector3f( .2f, .001f, .001f ), 0 );
+			renderer.AddLight( light3 );
+			Light light4 = new Light( 30, 0.1f, 300, new Vector3f( 0, 2.3f, 30 ), new Vector3f( 0.1f, 0, 0 ), new Vector3f( 1, 1, 1 ), new Vector3f( 1, .7f, .4f ), new Vector3f( .2f, .001f, .001f ), 10 );
+			renderer.AddLight( light4 );
 			
 			Camera camera = new Camera( 70, 0.1f, 200, new Vector3f( 0, 0, 1 ) );
 			
@@ -115,6 +127,7 @@ public class GameLoop
 			{
 				beginTime = GameLoop.GetTime();
 				
+				Vector3f.add( light3.GetRotation(), new Vector3f(0,GameLoop.deltaTime*1.2f,0), light3.GetRotation() );
 				Vector3f.add( light2.GetRotation(), new Vector3f(0,GameLoop.deltaTime,0), light2.GetRotation() );
 				
 				if( Keyboard.isKeyDown( Keyboard.KEY_N ))
@@ -125,6 +138,12 @@ public class GameLoop
 				if( Keyboard.isKeyDown( Keyboard.KEY_ESCAPE ) )
 					break;
 				
+				if( Keyboard.isKeyDown( Keyboard.KEY_F ) )
+				{
+					light4.GetRotation().set( camera.GetRotation() );
+					light4.GetLocation().set( camera.GetLocation() );
+				}
+				
 				if( Keyboard.isKeyDown( Keyboard.KEY_O ) )
 					multiMatNode.GetScale().scale( 1.1f );
 				if( Keyboard.isKeyDown( Keyboard.KEY_P ) )
@@ -132,8 +151,8 @@ public class GameLoop
 				if( multiMatNode.GetScale().length() < 0.01 )
 					multiMatNode.GetScale().set( 0.01f, 0.01f, 0.01f );
 				
-				if( Keyboard.isKeyDown( Keyboard.KEY_R ) )
-					light.GetRotation().y += GameLoop.deltaTime;
+//				if( Keyboard.isKeyDown( Keyboard.KEY_R ) )
+//					light.GetRotation().y += GameLoop.deltaTime;
 				sceneNode.GetRotation().y += GameLoop.deltaTime;
 				sceneNode.GetRotation().x += GameLoop.deltaTime * 0.5f;
 				sceneNode.GetRotation().z += GameLoop.deltaTime * 0.3f;
