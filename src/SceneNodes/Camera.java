@@ -16,17 +16,17 @@ public class Camera extends CameraBase
 {
 	public Camera( float fov, float zNear, float zFar, Vector3f location, Vector3f rotation, Vector3f scale )
 	{
-		super( new FrameBuffer(Display.getWidth()/2,Display.getHeight()/2,true,4), fov, zNear, zFar, location, rotation, scale );		
+		super( new FrameBuffer(Display.getWidth(),Display.getHeight(),true,4), fov, zNear, zFar, location, rotation, scale );		
 	}
 	
 	public Camera( float fov, float zNear, float zFar, Vector3f location, Vector3f rotation )
 	{
-		super( new FrameBuffer(Display.getWidth()/2,Display.getHeight()/2,true,4), fov, zNear, zFar, location, rotation );		
+		super( new FrameBuffer(Display.getWidth(),Display.getHeight(),true,4), fov, zNear, zFar, location, rotation );		
 	}
 	
 	public Camera( float fov, float zNear, float zFar, Vector3f location )
 	{
-		super( new FrameBuffer(Display.getWidth()/2,Display.getHeight()/2,true,4), fov, zNear, zFar, location );		
+		super( new FrameBuffer(Display.getWidth(),Display.getHeight(),true,4), fov, zNear, zFar, location );		
 	}
 
 
@@ -65,8 +65,8 @@ public class Camera extends CameraBase
 		Vector2f mouseOrigin = new Vector2f( windowSize.x * 0.5f, windowSize.y * 0.5f );
 		Vector2f mousePosition = new Vector2f( Mouse.getX() - mouseOrigin.x, Mouse.getY() - mouseOrigin.y );
 
-		this.rotation.x -= mousePosition.y * 0.004f;
-		this.rotation.y += mousePosition.x * 0.004f;
+		this.rotation.x += mousePosition.y * 0.004f;
+		this.rotation.y -= mousePosition.x * 0.004f;
 		Mouse.setCursorPosition( (int) mouseOrigin.x, (int) mouseOrigin.y );
 
 		if( this.rotation.x > Math.PI * 0.5 )
@@ -77,8 +77,8 @@ public class Camera extends CameraBase
 		if( temp.lengthSquared() > 0.01f )
 		{
 			Matrix4f matrix = new Matrix4f();
-			Matrix4f.rotate( -this.rotation.y, Maths.VEC_Y, matrix, matrix );
-			Matrix4f.rotate( -this.rotation.x, Maths.VEC_X, matrix, matrix );
+			Matrix4f.rotate( this.rotation.y, Maths.VEC_Y, matrix, matrix );
+			Matrix4f.rotate( this.rotation.x, Maths.VEC_X, matrix, matrix );
 
 			Matrix4f.transform( matrix, new Vector4f( temp.x, temp.y, temp.z, 1.0f ), temp4 );
 

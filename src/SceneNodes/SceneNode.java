@@ -3,13 +3,18 @@
 
 package SceneNodes;
 
+import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
+
+import Util.Maths;
 
 public abstract class SceneNode
 {
 	protected Vector3f location;
 	protected Vector3f rotation;
 	protected Vector3f scale;
+
+	protected Matrix4f worldTransformationMatrix;
 
 	private boolean enabled;
 
@@ -80,5 +85,15 @@ public abstract class SceneNode
 	public void Disable()
 	{
 		this.enabled = false;
+	}
+
+	public Matrix4f GetTransformationMatrix()
+	{
+		return this.worldTransformationMatrix;
+	}
+
+	public void UpdateRenderTick()
+	{
+		this.worldTransformationMatrix = Maths.CreateTransformMatrix( this.location, this.rotation, this.scale );
 	}
 }

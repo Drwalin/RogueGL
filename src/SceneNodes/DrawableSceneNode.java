@@ -13,7 +13,6 @@ import Util.Maths;
 public class DrawableSceneNode extends SceneNode
 {
 	private TexturedModel model;
-	private Matrix4f worldTransformationMatrix;
 	private MasterRenderer renderer;
 
 	public DrawableSceneNode( MasterRenderer renderer, TexturedModel model, Vector3f location, Vector3f rotation, Vector3f scale )
@@ -46,16 +45,6 @@ public class DrawableSceneNode extends SceneNode
 	{
 		this.model = model;
 		this.renderer.AddSceneNode( this );
-	}
-
-	public Matrix4f GetTransformationMatrix()
-	{
-		return this.worldTransformationMatrix;
-	}
-
-	public void UpdateRenderTick()
-	{
-		this.worldTransformationMatrix = Maths.CreateTransformMatrix( this.location, this.rotation, this.scale );
 	}
 
 }

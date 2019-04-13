@@ -23,22 +23,10 @@ public class Maths
 		matrix.setIdentity();
 		Matrix4f.translate( transform, matrix, matrix );
 		Matrix4f.scale( scale, matrix, matrix );
-		Matrix4f.rotate( rotation.x, Maths.VEC_X, matrix, matrix );
 		Matrix4f.rotate( rotation.y, Maths.VEC_Y, matrix, matrix );
+		Matrix4f.rotate( rotation.x, Maths.VEC_X, matrix, matrix );
 		Matrix4f.rotate( rotation.z, Maths.VEC_Z, matrix, matrix );
 		return matrix;
-	}
-
-	public static Matrix4f CreateViewMatrix( Vector3f transform, Vector3f rotation )
-	{
-		Matrix4f viewMatrix = new Matrix4f();
-		viewMatrix.setIdentity();
-		Matrix4f.rotate( rotation.x, Maths.VEC_X, viewMatrix, viewMatrix );
-		Matrix4f.rotate( rotation.y, Maths.VEC_Y, viewMatrix, viewMatrix );
-		;
-		Vector3f negativeCameraPos = new Vector3f( -transform.x, -transform.y, -transform.z );
-		Matrix4f.translate( negativeCameraPos, viewMatrix, viewMatrix );
-		return viewMatrix;
 	}
 
 }

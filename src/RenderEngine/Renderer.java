@@ -110,7 +110,7 @@ public class Renderer
 		}
 		
 		
-		camera.UpdateMatrices();
+		camera.UpdateRenderTick();
 		this.projectionMatrix = camera.GetProjectionMatrix();
 		this.viewMatrix = camera.GetViewMatrix();
 		Matrix4f.mul( this.projectionMatrix, this.viewMatrix, this.combinedMatrix );
