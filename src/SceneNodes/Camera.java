@@ -119,7 +119,7 @@ public class Camera extends CameraBase
 		}
 		if( Keyboard.isKeyDown( Keyboard.KEY_6 ) )
 		{
-			this.location = new Vector3f( GameLoop.LIGHT.GetLocation() );
+			this.location = new Vector3f( GameLoop.LIGHT.GetWorldLocation() );
 			this.rotation = new Vector3f( GameLoop.LIGHT.GetRotation() );
 		}
 	}

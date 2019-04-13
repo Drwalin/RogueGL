@@ -41,7 +41,7 @@ public abstract class CameraBase extends SceneNode
 		this.fov = fov;
 		this.zNear = zNear;
 		this.zFar = zFar;
-		this.UpdateRenderTick();
+		this.UpdateDrawState();
 		Mouse.setClipMouseCoordinatesToWindow( true );
 		Mouse.setGrabbed( true );
 	}
@@ -53,7 +53,7 @@ public abstract class CameraBase extends SceneNode
 		this.fov = fov;
 		this.zNear = zNear;
 		this.zFar = zFar;
-		this.UpdateRenderTick();
+		this.UpdateDrawState();
 		Mouse.setClipMouseCoordinatesToWindow( true );
 		Mouse.setGrabbed( true );
 	}
@@ -65,15 +65,15 @@ public abstract class CameraBase extends SceneNode
 		this.fov = fov;
 		this.zNear = zNear;
 		this.zFar = zFar;
-		this.UpdateRenderTick();
+		this.UpdateDrawState();
 		Mouse.setClipMouseCoordinatesToWindow( true );
 		Mouse.setGrabbed( true );
 	}
 	
 	@Override
-	public void UpdateRenderTick()
+	public void UpdateDrawState()
 	{
-		super.UpdateRenderTick();
+		super.UpdateDrawState();
 		
 		// Update projectionMatrix:
 		float aspectRatio = (float)this.frameBuffer.GetWidth() / (float)this.frameBuffer.GetHeight();
@@ -90,7 +90,7 @@ public abstract class CameraBase extends SceneNode
 		this.projectionMatrix.m33 = 0;
 		
 		// Update viewMatrix:
-		this.viewMatrix.load( this.GetTransformationMatrix() );
+		this.viewMatrix.load( this.worldTransformationMatrix );
 		this.viewMatrix.invert();
 	}
 	

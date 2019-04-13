@@ -40,11 +40,16 @@ public class MasterRenderer extends Renderer
 	public RawModel squareRawModel;
 	public Shader screenDrawerShader;
 	
-	public Camera mainCamera;
+	private Camera mainCamera;
 	
 	public void SetMainCamera( Camera camera )
 	{
 		this.mainCamera = camera;
+	}
+	
+	public Camera GetMainCamera()
+	{
+		return this.mainCamera;
 	}
 	
 	public List<Vector3f> GetLightsDirection()
@@ -212,7 +217,7 @@ public class MasterRenderer extends Renderer
 	public void Render()
 	{
 		// Update DrawableSceneNodes world transformation matrices:
-		this.UpdateRenderTick();
+		this.UpdateRenderState();
 		
 		// Draw shadows:
 		this.RenderShadows();
@@ -231,21 +236,21 @@ public class MasterRenderer extends Renderer
 		DisplayManager.Update();
 	}
 	
-	private void UpdateRenderTick()
+	private void UpdateRenderState()
 	{
-		// can be parallel
+		// should be parallelized
 		for( DrawableSceneNode sceneNode : this.sceneNodesBank.keySet() )
 		{
-			if( sceneNode.NeedGlobalUpdate() )
+			if( sceneNode.UseGlobalUpdate() )
 			{
-				sceneNode.UpdateRenderTick();
+				sceneNode.UpdateDrawState();
 			}
 		}
 		for( CameraBase camera : this.cameras )
 		{
-			if( camera.NeedGlobalUpdate() )
+			if( camera.UseGlobalUpdate() )
 			{
-				camera.UpdateRenderTick();
+				camera.UpdateDrawState();
 			}
 		}
 	}
@@ -268,7 +273,9 @@ public class MasterRenderer extends Renderer
 				if( light.IsEnabled() )
 				{
 					if( light.NeedRedraw() )
+					{
 						this.RenderScene( light );
+					}
 					this.lightsTransformation.add( Matrix4f.mul( light.GetProjectionMatrix(), light.GetViewMatrix(), null ) );
 					this.lightsPosition.add( new Vector4f( light.GetWorldLocation().x, light.GetWorldLocation().y, light.GetWorldLocation().z, (float)Math.cos( Math.toRadians( (double)light.GetInnerSpotAngle() / 2 ) ) ) );
 					this.lightsColor.add( light.GetColor() );
@@ -340,7 +347,7 @@ public class MasterRenderer extends Renderer
 	
 	private void DrawLightsToScreen()
 	{
-		this.camera.GetFrameBuffer().Unbind();
+		this.currentCamera.GetFrameBuffer().Unbind();
 		GL11.glViewport( 0, 0, Display.getWidth(), Display.getHeight() );
 		
 		GL11.glDisable( GL11.GL_ALPHA );

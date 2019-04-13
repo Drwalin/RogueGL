@@ -28,6 +28,8 @@ public class GameLoop
 		return ((float)(System.currentTimeMillis() - GameLoop.ORIGIN_MILLIS)) / 1000.0f;
 	}
 	
+	static boolean wasPressedF = false;
+	
 	public static void main( String[] args )
 	{
 		try
@@ -90,7 +92,8 @@ public class GameLoop
 			}
 			{
 				RawModel model = loader.LoadCOLLADA( "static/TechDemoMap", true );
-				multiMatModel = new TexturedModel( model, new MaterialShineable( shaderNormalMapped, false, 12.0f, 0.93f, textureCrate, textureCrateNormal ), new MaterialShineable( shaderNormalMapped, false, 11.0f, 0.93f, textureBarrel, textureBarrelNormal ) );
+				multiMatModel = new TexturedModel( model, new MaterialShineable( shaderNormalMapped, false, 12.0f, 0.93f, textureCrate, textureCrateNormal ),
+						new MaterialShineable( shaderNormalMapped, false, 11.0f, 0.93f, textureBarrel, textureBarrelNormal ) );
 			}
 			{
 				RawModel model = loader.LoadOBJ( "pilar", true );
@@ -123,25 +126,28 @@ public class GameLoop
 			
 			for( int i = 0; i < 100; ++i )
 			{
-				DrawableSceneNode node = new DrawableSceneNode( renderer, citadelModel, new Vector3f( -20 + (float)Math.random() * 800 - 400, 0, 45 + (float)Math.random() * 800 - 400 ), new Vector3f( -(float)Math.PI / 2, 0, 0 ), new Vector3f( (float)Math.random() * 0.05f + 0.05f, (float)Math.random() * 0.05f + 0.05f, (float)Math.random() * 0.05f + 0.05f ) );
+				DrawableSceneNode node = new DrawableSceneNode( renderer, citadelModel, new Vector3f( -20 + (float)Math.random() * 800 - 400, 0, 45 + (float)Math.random() * 800 - 400 ),
+						new Vector3f( -(float)Math.PI / 2, 0, 0 ), new Vector3f( (float)Math.random() * 0.05f + 0.05f, (float)Math.random() * 0.05f + 0.05f, (float)Math.random() * 0.05f + 0.05f ) );
 				renderer.AddSceneNode( node );
 			}
 			
-			Light light = new Light( 70, 0.1f, 300, new Vector3f( 0, 2.3f, 30 ), new Vector3f( 0.1f, 0, 0 ), new Vector3f( 1, 1, 1 ), new Vector3f( 1, .7f, .4f ), new Vector3f( .2f, .001f, .001f ), 10 );
+			Light light = new Light( 70, 0.1f, 300, new Vector3f( 0, 2.3f, 30 ), new Vector3f( 0.1f, 0, 0 ), new Vector3f( 1, 1, 1 ), new Vector3f( 1, .7f, .4f ), new Vector3f( .2f, .001f, .001f ),
+					10 );
 			renderer.AddLight( light );
 			GameLoop.LIGHT = light;
-			Light light2 = new Light( 80, 0.1f, 300, new Vector3f( 35, 4.3f, 50 ), new Vector3f( 0.2f, 0, 0 ), new Vector3f( 1, 1, 1 ), new Vector3f( .4f, .7f, 1 ), new Vector3f( .2f, .001f, .001f ), 0 );
+			Light light2 = new Light( 80, 0.1f, 300, new Vector3f( 35, 4.3f, 50 ), new Vector3f( 0.2f, 0, 0 ), new Vector3f( 1, 1, 1 ), new Vector3f( .4f, .7f, 1 ), new Vector3f( .2f, .001f, .001f ),
+					0 );
 			renderer.AddLight( light2 );
-			Light light3 = new Light( 90, 0.1f, 300, new Vector3f( -20, 30, 45 ), new Vector3f( 0.8f, 0, 0 ), new Vector3f( 1, 1, 1 ), new Vector3f( 1, .4f, .1f ), new Vector3f( .2f, .001f, .001f ), 0 );
+			Light light3 = new Light( 90, 0.1f, 300, new Vector3f( -20, 30, 45 ), new Vector3f( 0.8f, 0, 0 ), new Vector3f( 1, 1, 1 ), new Vector3f( 1, .4f, .1f ), new Vector3f( .2f, .001f, .001f ),
+					0 );
 			renderer.AddLight( light3 );
-			Light light4 = new Light( 80, 0.1f, 300, new Vector3f( 0, -0.3f, 0 ), new Vector3f( 0, 0, 0 ), new Vector3f( 1, 1, 1 ), new Vector3f( 1, .7f, .4f ), new Vector3f( .2f, .001f, .001f ), 10 );
+			Light light4 = new Light( 80, 0.1f, 300, new Vector3f( 0, -0.3f, 0 ), new Vector3f( 0.1f, 0, 0 ), new Vector3f( 1, 1, 1 ), new Vector3f( 1, .7f, .4f ), new Vector3f( .2f, .001f, .001f ),
+					10 );
 			renderer.AddLight( light4 );
 			
 			Camera camera = new Camera( 70, 0.1f, 400, new Vector3f( 0, 0, 1 ) );
-			renderer.AddCamera( camera );
 			renderer.SetMainCamera( camera );
-			
-			camera.AddChildNode( light4 );
+			camera.AddChild( light4 );
 			
 			while( !Display.isCloseRequested() )
 			{
@@ -157,6 +163,15 @@ public class GameLoop
 				
 				if( Keyboard.isKeyDown( Keyboard.KEY_ESCAPE ) )
 					break;
+				
+				if( Keyboard.isKeyDown( Keyboard.KEY_F ) && GameLoop.wasPressedF == false )
+				{
+					if( light4.GetParent() == null )
+						camera.AddChild( light4 );
+					else
+						camera.RemoveChild( light4 );
+				}
+				GameLoop.wasPressedF = Keyboard.isKeyDown( Keyboard.KEY_F );
 				
 				if( Keyboard.isKeyDown( Keyboard.KEY_O ) )
 					multiMatNode.GetScale().scale( 1.1f );
