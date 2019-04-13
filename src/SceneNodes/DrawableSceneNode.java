@@ -3,12 +3,10 @@
 
 package SceneNodes;
 
-import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
 import Models.TexturedModel;
 import RenderEngine.MasterRenderer;
-import Util.Maths;
 
 public class DrawableSceneNode extends SceneNode
 {

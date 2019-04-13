@@ -23,13 +23,18 @@ public class Renderer
 	protected boolean drawingShadow;
 	
 	protected Vector3f ambientLightColor = new Vector3f( .2f, .2f, .2f );
-	protected List<Light> lights = new ArrayList<Light>();
+	protected List<CameraBase> cameras = new ArrayList<CameraBase>();
 	
 	protected CameraBase camera;
 	
 	public CameraBase GetCamera()
 	{
 		return this.camera;
+	}
+	
+	public List<CameraBase> GetCameras()
+	{
+		return this.cameras;
 	}
 	
 	public Matrix4f GetProjectionMatrix()
@@ -52,14 +57,14 @@ public class Renderer
 		return this.fullCombinedMatrix;
 	}
 	
-	public void AddLight( Light light )
+	public void AddCamera( CameraBase camera )
 	{
-		this.lights.add( light );
+		this.cameras.add( camera );
 	}
 	
-	public List<Light> GetLights()
+	public void AddLight( Light light )
 	{
-		return this.lights;
+		this.cameras.add( light );
 	}
 	
 	public Vector3f GetAmbientLightColor()
@@ -110,7 +115,6 @@ public class Renderer
 		}
 		
 		
-		camera.UpdateRenderTick();
 		this.projectionMatrix = camera.GetProjectionMatrix();
 		this.viewMatrix = camera.GetViewMatrix();
 		Matrix4f.mul( this.projectionMatrix, this.viewMatrix, this.combinedMatrix );

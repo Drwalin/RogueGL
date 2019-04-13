@@ -7,7 +7,6 @@ import org.lwjgl.input.*;
 import org.lwjgl.util.vector.*;
 
 import RenderEngine.FrameBuffer;
-import Util.Maths;
 
 public abstract class CameraBase extends SceneNode
 {
@@ -33,7 +32,7 @@ public abstract class CameraBase extends SceneNode
 	}
 	
 	protected Matrix4f projectionMatrix = new Matrix4f();
-	protected Matrix4f viewMatrix;
+	protected Matrix4f viewMatrix = new Matrix4f();
 	
 	public CameraBase( FrameBuffer frameBuffer, float fov, float zNear, float zFar, Vector3f location, Vector3f rotation, Vector3f scale )
 	{
@@ -91,7 +90,8 @@ public abstract class CameraBase extends SceneNode
 		this.projectionMatrix.m33 = 0;
 		
 		// Update viewMatrix:
-		this.viewMatrix = (Matrix4f)new Matrix4f( this.GetTransformationMatrix() ).invert();
+		this.viewMatrix.load( this.GetTransformationMatrix() );
+		this.viewMatrix.invert();
 	}
 	
 	public Matrix4f GetProjectionMatrix()

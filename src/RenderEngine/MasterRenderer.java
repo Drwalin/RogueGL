@@ -18,6 +18,7 @@ import Loaders.Loader;
 import Materials.Material;
 import Models.RawModel;
 import Models.TexturedModel;
+import SceneNodes.Camera;
 import SceneNodes.CameraBase;
 import SceneNodes.DrawableSceneNode;
 import SceneNodes.Light;
@@ -32,12 +33,19 @@ public class MasterRenderer extends Renderer
 	protected List<Matrix4f> lightsTransformation = new ArrayList<Matrix4f>();
 	protected List<Vector4f> lightsPosition = new ArrayList<Vector4f>();
 	protected List<Vector3f> lightsColor = new ArrayList<Vector3f>();
-	protected List<Vector4f> lightsAttenuation = new ArrayList<Vector4f>();		// att[3] = cos(fov/2)
+	protected List<Vector4f> lightsAttenuation = new ArrayList<Vector4f>(); // att[3] = cos(fov/2)
 	protected List<Integer> lightsDepthBuffers = new ArrayList<Integer>();
 	protected List<Vector3f> lightsDirection = new ArrayList<Vector3f>();
 	
 	public RawModel squareRawModel;
 	public Shader screenDrawerShader;
+	
+	public Camera mainCamera;
+	
+	public void SetMainCamera( Camera camera )
+	{
+		this.mainCamera = camera;
+	}
 	
 	public List<Vector3f> GetLightsDirection()
 	{
@@ -201,29 +209,45 @@ public class MasterRenderer extends Renderer
 		}
 	}
 	
-	public void Render( CameraBase camera )
+	public void Render()
 	{
 		// Update DrawableSceneNodes world transformation matrices:
-		for( DrawableSceneNode sceneNode : this.sceneNodesBank.keySet() )
-			sceneNode.UpdateRenderTick();
+		this.UpdateRenderTick();
 		
 		// Draw shadows:
 		this.RenderShadows();
 		
 		// Draw scene:
-		this.RenderScene( camera );
+		this.RenderScene( this.mainCamera );
 		
 		// Draw shadows and lights as post process:
 		this.DrawLightsToScreen();
 		
 		// Draw other post processes:
 		
-		
 		// Draw GUI:
-		
 		
 		// Update display manager:
 		DisplayManager.Update();
+	}
+	
+	private void UpdateRenderTick()
+	{
+		// can be parallel
+		for( DrawableSceneNode sceneNode : this.sceneNodesBank.keySet() )
+		{
+			if( sceneNode.NeedGlobalUpdate() )
+			{
+				sceneNode.UpdateRenderTick();
+			}
+		}
+		for( CameraBase camera : this.cameras )
+		{
+			if( camera.NeedGlobalUpdate() )
+			{
+				camera.UpdateRenderTick();
+			}
+		}
 	}
 	
 	private void RenderShadows()
@@ -235,21 +259,23 @@ public class MasterRenderer extends Renderer
 		this.lightsDepthBuffers.clear();
 		this.lightsDirection.clear();
 		
-		for( int i = 0; i < this.lights.size(); ++i )
+		for( int i = 0; i < this.cameras.size(); ++i )
 		{
-			Light light = this.lights.get( i );
-			if( light.IsEnabled() )
+			CameraBase cameraBase = this.cameras.get( i );
+			if( cameraBase instanceof Light )
 			{
-				if( light.NeedRedraw() )
+				Light light = (Light)cameraBase;
+				if( light.IsEnabled() )
 				{
-					this.RenderScene( light );
+					if( light.NeedRedraw() )
+						this.RenderScene( light );
+					this.lightsTransformation.add( Matrix4f.mul( light.GetProjectionMatrix(), light.GetViewMatrix(), null ) );
+					this.lightsPosition.add( new Vector4f( light.GetWorldLocation().x, light.GetWorldLocation().y, light.GetWorldLocation().z, (float)Math.cos( Math.toRadians( (double)light.GetInnerSpotAngle() / 2 ) ) ) );
+					this.lightsColor.add( light.GetColor() );
+					this.lightsAttenuation.add( new Vector4f( light.GetAttenuation().x, light.GetAttenuation().y, light.GetAttenuation().z, (float)Math.cos( Math.toRadians( (double)light.GetFov() / 2 ) ) ) );
+					this.lightsDepthBuffers.add( light.GetFrameBuffer().GetDepthTexture() );
+					this.lightsDirection.add( light.GetForward() );
 				}
-				this.lightsTransformation.add( Matrix4f.mul( light.GetProjectionMatrix(), light.GetViewMatrix(), null ) );
-				this.lightsPosition.add( new Vector4f( light.GetLocation().x, light.GetLocation().y, light.GetLocation().z, (float)Math.cos( Math.toRadians( (double)light.GetInnerSpotAngle()/2 ) ) ) );
-				this.lightsColor.add( light.GetColor() );
-				this.lightsAttenuation.add( new Vector4f( light.GetAttenuation().x, light.GetAttenuation().y, light.GetAttenuation().z, (float)Math.cos( Math.toRadians( (double)light.GetFov()/2 ) ) ) );
-				this.lightsDepthBuffers.add( light.GetFrameBuffer().GetDepthTexture() );
-				this.lightsDirection.add( light.GetForward() );
 			}
 		}
 	}

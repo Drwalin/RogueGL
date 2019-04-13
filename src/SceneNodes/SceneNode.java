@@ -3,8 +3,10 @@
 
 package SceneNodes;
 
-import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Vector3f;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.lwjgl.util.vector.*;
 
 import Util.Maths;
 
@@ -17,6 +19,9 @@ public abstract class SceneNode
 	protected Matrix4f worldTransformationMatrix;
 
 	private boolean enabled;
+	
+	protected SceneNode parentNode = null;
+	protected Set<SceneNode> childNodes = new HashSet<SceneNode>();
 
 	public SceneNode( Vector3f location, Vector3f rotation, Vector3f scale )
 	{
@@ -47,6 +52,12 @@ public abstract class SceneNode
 		return this.location;
 	}
 
+	public Vector3f GetWorldLocation()
+	{
+		Vector4f ret = Matrix4f.transform( this.worldTransformationMatrix, new Vector4f( this.location.x, this.location.y, this.location.z, 1 ), null );
+		return new Vector3f( ret.x, ret.y, ret.z );
+	}
+
 	public void SetLocation( Vector3f location )
 	{
 		this.location = location;
@@ -55,6 +66,15 @@ public abstract class SceneNode
 	public Vector3f GetRotation()
 	{
 		return this.rotation;
+	}
+
+	public Vector3f GetWorldRotation() throws Exception
+	{
+		//Quaternion rot = new Quaternion();
+		//this.worldTransformationMatrix.get( rot );
+		throw new Exception("SceneNode.GetWorldRotation is not done yet");
+		
+		//return this.rotation;
 	}
 
 	public void SetRotation( Vector3f rotation )
@@ -95,5 +115,43 @@ public abstract class SceneNode
 	public void UpdateRenderTick()
 	{
 		this.worldTransformationMatrix = Maths.CreateTransformMatrix( this.location, this.rotation, this.scale );
+		if( this.parentNode != null )
+		{
+			this.worldTransformationMatrix = Matrix4f.mul( this.parentNode.GetTransformationMatrix(), this.worldTransformationMatrix, null );
+		}
+		this.UpdateChildNodes();
+	}
+	
+	public Set<SceneNode> GetChildNodes()
+	{
+		return this.childNodes;
+	}
+	
+	public SceneNode GetParentNode()
+	{
+		return this.parentNode;
+	}
+	
+	public boolean NeedGlobalUpdate()
+	{
+		return this.parentNode == null;
+	}
+	
+	private void UpdateChildNodes()
+	{
+		for( SceneNode child : this.childNodes )
+			child.UpdateRenderTick();
+	}
+	
+	public void AddChildNode( SceneNode child )
+	{
+		this.childNodes.add( child );
+		child.parentNode = this;
+	}
+	
+	public void RemoveChildNode( SceneNode child )
+	{
+		this.childNodes.remove( child );
+		child.parentNode = null;
 	}
 }
