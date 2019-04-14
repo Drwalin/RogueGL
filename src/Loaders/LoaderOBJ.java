@@ -245,11 +245,11 @@ public class LoaderOBJ
 			vboID = new int[5];
 
 		vboID[0] = Loader.BindIndicesBuffer( indicesArray );
-		vboID[1] = Loader.StoreDataInAttributeList( 0, 3, verticesArray );
-		vboID[2] = Loader.StoreDataInAttributeList( 1, 2, uvsArray );
-		vboID[3] = Loader.StoreDataInAttributeList( 2, 3, normalsArray );
+		vboID[1] = Loader.StoreFloatDataInAttributeList( 0, 3, verticesArray );
+		vboID[2] = Loader.StoreFloatDataInAttributeList( 1, 2, uvsArray );
+		vboID[3] = Loader.StoreFloatDataInAttributeList( 2, 3, normalsArray );
 		if( useTangent )
-			vboID[4] = Loader.StoreDataInAttributeList( 3, 3, tangentsArray );
+			vboID[4] = Loader.StoreFloatDataInAttributeList( 3, 3, tangentsArray );
 		Loader.UnbindVAO();
 
 		return new RawModel( vaoID, vboID, materialOfsets, indicesArray.length );

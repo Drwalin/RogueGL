@@ -58,10 +58,10 @@ public class Loader
 		return model;
 	}
 	
-	public RawModel LoadCOLLADA( String fileName, boolean useTangent ) throws Exception
+	public RawModel LoadCOLLADA( String fileName, boolean useTangent, boolean loadBoneWeights ) throws Exception
 	{
 		NodeXML rootNode = LoaderXML.Load( "res/models/" + fileName + ".dae" );
-		RawModel model = LoaderCOLLADA.LoadModel( rootNode, useTangent );
+		RawModel model = LoaderCOLLADA.LoadModel( rootNode, useTangent, loadBoneWeights );
 		this.models.add( model );
 		return model;
 	}
@@ -78,13 +78,24 @@ public class Loader
 		GL30.glBindVertexArray( 0 );
 	}
 	
-	public static int StoreDataInAttributeList( int attributeNumber, int coordinateSize, float[] data )
+	public static int StoreFloatDataInAttributeList( int attributeNumber, int coordinateSize, float[] data )
 	{
 		int vboID = GL15.glGenBuffers();
 		GL15.glBindBuffer( GL15.GL_ARRAY_BUFFER, vboID );
 		FloatBuffer buffer = Loader.StoreDataInFloatBuffer( data );
 		GL15.glBufferData( GL15.GL_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW );
 		GL20.glVertexAttribPointer( attributeNumber, coordinateSize, GL11.GL_FLOAT, false, 0, 0 );
+		GL15.glBindBuffer( GL15.GL_ARRAY_BUFFER, 0 );
+		return vboID;
+	}
+	
+	public static int StoreByteDataInAttributeList( int attributeNumber, int coordinateSize, byte[] data )
+	{
+		int vboID = GL15.glGenBuffers();
+		GL15.glBindBuffer( GL15.GL_ARRAY_BUFFER, vboID );
+		ByteBuffer buffer = Loader.StoreDataInByteBuffer( data );
+		GL15.glBufferData( GL15.GL_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW );
+		GL20.glVertexAttribPointer( attributeNumber, coordinateSize, GL11.GL_BYTE, false, 0, 0 );
 		GL15.glBindBuffer( GL15.GL_ARRAY_BUFFER, 0 );
 		return vboID;
 	}
@@ -111,6 +122,13 @@ public class Loader
 		IntBuffer buffer = Loader.StoreDataInIntBuffer( indices );
 		GL15.glBufferData( GL15.GL_ELEMENT_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW );
 		return vboId;
+	}
+	private static ByteBuffer StoreDataInByteBuffer( byte[] data )
+	{
+		ByteBuffer buffer = BufferUtils.createByteBuffer( data.length );
+		buffer.put( data );
+		buffer.flip();
+		return buffer;
 	}
 	
 	private static IntBuffer StoreDataInIntBuffer( int[] data )

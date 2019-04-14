@@ -51,6 +51,7 @@ public class GameLoop
 			TexturedModel boulderModel = null;
 			TexturedModel citadelModel = null;
 			TexturedModel cameraModel = null;
+			TexturedModel characterModel = null;
 			
 			TextureInstance texturePalm = loader.LoadTexture( "fern" );
 			TextureInstance textureCrate = loader.LoadTexture( "crate" );
@@ -65,9 +66,17 @@ public class GameLoop
 			
 			TextureInstance textureCameraScreen = loader.LoadTexture( "camera/screen" );
 			TextureInstance textureCameraBox = loader.LoadTexture( "camera/box" );
+
+			TextureInstance textureCharacter = loader.LoadTexture( "CharacterTexture" );
 			
 			{
-				RawModel model = loader.LoadCOLLADA( "CameraTripod", false );
+				RawModel model = loader.LoadCOLLADA( "animated/CharacterRunning", true, true );
+				Material material = new MaterialShineable( shader, true, 1.0f, 0.1f, textureCharacter );
+				characterModel = new TexturedModel( model, material );
+			}
+			
+			{
+				RawModel model = loader.LoadCOLLADA( "CameraTripod", false, false );
 				Material matScreen = new MaterialShineable( shader, true, 4.0f, 0.3f, textureCameraScreen );
 				Material matBox = new MaterialShineable( shader, true, 1.0f, 0.03f, textureCameraBox );
 				cameraModel = new TexturedModel( model, matBox, matBox, matBox, matBox, matBox, matScreen );
@@ -90,7 +99,7 @@ public class GameLoop
 				barrelModel = new TexturedModel( model, new MaterialShineable( shaderNormalMapped, false, 2.f, .7f, textureBarrel, textureBarrelNormal ) );
 			}
 			{
-				RawModel model = loader.LoadCOLLADA( "static/TechDemoMap", true );
+				RawModel model = loader.LoadCOLLADA( "static/TechDemoMap", true, false );
 				multiMatModel = new TexturedModel( model, new MaterialShineable( shaderNormalMapped, false, 12.0f, 0.93f, textureCrate, textureCrateNormal ), new MaterialShineable( shaderNormalMapped, false, 11.0f, 0.93f, textureBarrel, textureBarrelNormal ) );
 			}
 			{
@@ -98,7 +107,7 @@ public class GameLoop
 				pilarModel = new TexturedModel( model, new MaterialShineable( shaderNormalMapped, false, 2.f, .7f, texturePilar, texturePilarNormal ) );
 			}
 			{
-				RawModel model = loader.LoadCOLLADA( "Citadel-Tower", true );
+				RawModel model = loader.LoadCOLLADA( "Citadel-Tower", true, false );
 				citadelModel = new TexturedModel( model, new MaterialShineable( shader, false, 2.f, .7f, textureRustyMetal ), new MaterialShineable( shader, false, 2.f, .7f, textureCrate ) );
 			}
 			
@@ -112,6 +121,9 @@ public class GameLoop
 			DrawableSceneNode citadelNode = new DrawableSceneNode( renderer, citadelModel, new Vector3f( -20, 0, 45 ), new Quaternionf().rotateX( -(float)java.lang.Math.PI / 2 ), new Vector3f( .1f, .1f, .1f ) );
 			DrawableSceneNode cameraNode = new DrawableSceneNode( renderer, cameraModel, new Vector3f( -10, 2, 25 ), new Quaternionf().rotateX( -(float)java.lang.Math.PI / 2 ), new Vector3f( 1, 1, 1 ) );
 			
+			DrawableSceneNode character = new DrawableSceneNode( renderer, characterModel, new Vector3f( 3, 3, 17 ), new Quaternionf().rotateX( -(float)java.lang.Math.PI / 2 ), new Vector3f( 0.2f, 0.2f, 0.2f ) );
+
+			renderer.AddSceneNode( character );
 			renderer.AddSceneNode( palm1 );
 			renderer.AddSceneNode( palm2 );
 			renderer.AddSceneNode( sceneNode );

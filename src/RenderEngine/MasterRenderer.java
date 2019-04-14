@@ -95,7 +95,7 @@ public class MasterRenderer extends Renderer
 				-1, 1 };
 		
 		vboID[0] = Loader.BindIndicesBuffer( indicesArray );
-		vboID[1] = Loader.StoreDataInAttributeList( 0, 2, verticesArray );
+		vboID[1] = Loader.StoreFloatDataInAttributeList( 0, 2, verticesArray );
 		Loader.UnbindVAO();
 		
 		int[] materialOffsets = { 0 };
