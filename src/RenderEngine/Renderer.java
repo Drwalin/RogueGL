@@ -14,8 +14,8 @@ import SceneNodes.Light;
 
 public class Renderer
 {
-	protected Matrix4f projectionMatrix;
-	protected Matrix4f viewMatrix;
+	protected Matrix4f projectionMatrix = new Matrix4f();
+	protected Matrix4f viewMatrix = new Matrix4f();
 	protected Matrix4f combinedMatrix = new Matrix4f();
 	protected Matrix4f fullCombinedMatrix = new Matrix4f();
 	
@@ -112,9 +112,8 @@ public class Renderer
 			GL11.glEnable( GL11.GL_CULL_FACE );
 		}
 		
-		camera.UpdateDrawState();
-		this.projectionMatrix = camera.GetProjectionMatrix();
-		this.viewMatrix = camera.GetViewMatrix();
+		this.projectionMatrix.set( camera.GetProjectionMatrix() );
+		this.viewMatrix.set( camera.GetViewMatrix() );
 		this.combinedMatrix.set( this.projectionMatrix ).mul( this.viewMatrix );
 	}
 }

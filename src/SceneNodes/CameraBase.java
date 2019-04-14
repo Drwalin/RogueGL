@@ -40,7 +40,7 @@ public abstract class CameraBase extends SceneNode
 		this.fov = fov;
 		this.zNear = zNear;
 		this.zFar = zFar;
-		this.UpdateDrawState();
+		this.UpdateTransformationState( true );
 	}
 	
 	public CameraBase( FrameBuffer frameBuffer, float fov, float zNear, float zFar, Vector3f location, Quaternionf rotation )
@@ -50,7 +50,7 @@ public abstract class CameraBase extends SceneNode
 		this.fov = fov;
 		this.zNear = zNear;
 		this.zFar = zFar;
-		this.UpdateDrawState();
+		this.UpdateTransformationState( true );
 	}
 	
 	public CameraBase( FrameBuffer frameBuffer, float fov, float zNear, float zFar, Vector3f location )
@@ -60,13 +60,13 @@ public abstract class CameraBase extends SceneNode
 		this.fov = fov;
 		this.zNear = zNear;
 		this.zFar = zFar;
-		this.UpdateDrawState();
+		this.UpdateTransformationState( true );
 	}
 	
 	@Override
-	public void UpdateDrawState()
+	public void UpdateTransformationState( boolean updateMatrices )
 	{
-		super.UpdateDrawState();
+		super.UpdateTransformationState( true );
 		
 		// Update projectionMatrix:
 		float aspectRatio = (float)this.frameBuffer.GetWidth() / (float)this.frameBuffer.GetHeight();
@@ -105,7 +105,7 @@ public abstract class CameraBase extends SceneNode
 	public Vector3f GetForward()
 	{
 		Vector4f t = new Vector4f(0,0,-1,0);
-		new Matrix4f(this.viewMatrix).invert().transform( t );
+		this.GetTransformationMatrix().transform( t );
 		return new Vector3f( t.x, t.y, t.z );
 	}
 }

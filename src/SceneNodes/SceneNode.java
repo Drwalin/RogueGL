@@ -8,13 +8,11 @@ import java.util.Set;
 
 import org.joml.*;
 
-import Util.Maths;
-
 public abstract class SceneNode
 {
-	protected Vector3f location;
-	protected Quaternionf rotation;
-	protected Vector3f scale;
+	protected Vector3f location = new Vector3f();
+	protected Quaternionf rotation = new Quaternionf();
+	protected Vector3f scale = new Vector3f(1,1,1);
 	
 	protected Vector3f worldLocation = new Vector3f();
 	protected Quaternionf worldRotation = new Quaternionf();
@@ -23,42 +21,53 @@ public abstract class SceneNode
 	
 	private boolean enabled;
 	
-	protected SceneNode parentNode;
+	protected SceneNode parentNode = null;
 	protected Set<SceneNode> childNodes = new HashSet<SceneNode>();
 	
 	public SceneNode( Vector3f location, Quaternionf rotation, Vector3f scale )
 	{
-		this.location = location;
-		this.rotation = rotation;
-		this.scale = scale;
+		this.location.set( location );
+		this.rotation.set( rotation );
+		this.scale.set( scale );
 		this.enabled = true;
+		this.worldLocation.set( this.location );
+		this.worldRotation.set( this.rotation );
 	}
 	
 	public SceneNode( Vector3f location, Quaternionf rotation )
 	{
-		this.location = location;
-		this.rotation = rotation;
-		this.scale = new Vector3f( 1, 1, 1 );
+		this.location.set( location );
+		this.rotation.set( rotation );
 		this.enabled = true;
+		this.worldLocation.set( this.location );
+		this.worldRotation.set( this.rotation );
 	}
 	
 	public SceneNode( Vector3f location )
 	{
-		this.location = location;
-		this.rotation = new Quaternionf();
-		this.scale = new Vector3f( 1, 1, 1 );
+		this.location.set( location );
 		this.enabled = true;
+		this.worldLocation.set( this.location );
 	}
 	
-	public Vector3f GetLocation()
+	public Vector3f GetLocalLocation()
 	{
-		System.out.println( "SceneNode.GetLocation()" );
 		return this.location;
 	}
 	
-	public void SetLocation( Vector3f location )
+	public void SetLocalLocation( Vector3f newLocation )
 	{
-		this.location = location;
+		if( this.parentNode == null )
+		{
+			this.location.set( newLocation );
+			this.worldLocation.set( newLocation );
+		}
+		else
+		{
+			Vector3f deltaLocation = new Vector3f().set( newLocation ).sub( this.location );
+			this.parentNode.worldRotation.transform( deltaLocation );
+			this.worldLocation.add( deltaLocation );
+		}
 	}
 	
 	public Vector3f GetWorldLocation()
@@ -66,20 +75,57 @@ public abstract class SceneNode
 		return this.worldLocation;
 	}
 	
-	public Quaternionf GetRotation()
+	public void SetWorldLocation( Vector3f newLocation )
+	{
+		if( this.parentNode == null )
+		{
+			this.location.set( newLocation );
+			this.worldLocation.set( newLocation );
+		}else
+		{
+			Vector3f deltaLocation = new Vector3f().set( newLocation ).sub( this.worldLocation );
+			Quaternionf dest = new Quaternionf();
+			this.worldRotation.invert( dest );
+			dest.transform( deltaLocation );
+			this.parentNode.worldRotation.transform( deltaLocation ); // ?????????????
+			this.location.add( deltaLocation );
+			this.worldLocation.set( newLocation );
+		}
+	}
+	
+	public Quaternionf GetLocalRotation()
 	{
 		return this.rotation;
 	}
 	
-	public void SetRotation( Quaternionf rotation )
+	public void SetLocalRotation( Quaternionf newRotation )
 	{
-		this.rotation = rotation;
+		this.rotation.set( newRotation );
+		this.worldRotation.set( newRotation );
+		if( this.parentNode != null )
+		{
+			this.worldRotation.set( newRotation ).mul( this.parentNode.worldRotation );
+		}
 	}
 	
-	public Quaternionf GetWorldRotation() throws Exception
+	public Quaternionf GetWorldRotation()
 	{
-		throw new Exception( "SceneNode.GetWorldRotation() is not done yet, no ide how to do it" );
-//		return this.worldRotation;
+		return this.worldRotation;
+	}
+	
+	public void SetWorldRotation( Quaternionf newRotation )
+	{
+		if( this.parentNode == null )
+		{
+			this.rotation.set( newRotation );
+			this.worldRotation.set( newRotation );
+		}else
+		{
+			// ??????????????????
+			this.worldRotation.difference( newRotation );
+			this.rotation.mul( this.worldRotation );
+			this.worldRotation.set( newRotation );
+		}
 	}
 	
 	public Vector3f GetScale()
@@ -89,7 +135,7 @@ public abstract class SceneNode
 	
 	public void SetScale( Vector3f scale )
 	{
-		this.scale = scale;
+		this.scale.set( scale );
 	}
 	
 	public boolean IsEnabled()
@@ -112,28 +158,43 @@ public abstract class SceneNode
 		return this.worldTransformationMatrix;
 	}
 	
-	public void UpdateDrawState()
+	public SceneNode GetRootNode()
 	{
-		this.worldTransformationMatrix.identity().translationRotateScale( this.location, this.rotation, this.scale );
+		SceneNode rootChild = this;
+		SceneNode root = this.parentNode;
+		while( root != null )
+		{
+			rootChild = root;
+			root = root.parentNode;
+		}
+		return rootChild;
+	}
+	
+	public void UpdateRootTransformationState( boolean updateMatrices )
+	{
+		this.GetRootNode().UpdateTransformationState( updateMatrices );
+	}
+	
+	public void UpdateTransformationState( boolean updateMatrices )
+	{
 		if( this.parentNode != null )
 		{
-			this.parentNode.worldTransformationMatrix.mul( this.worldTransformationMatrix, this.worldTransformationMatrix );
-			Vector4f t = new Vector4f( this.location.x, this.location.y, this.location.z, 1 );
-			this.worldTransformationMatrix.transform( t );
-			this.worldLocation.set( t.x, t.y, t.z );
+			this.worldRotation.set( this.parentNode.worldRotation ).mul( this.rotation );
+			
+			this.worldLocation.set( this.location );
+			this.parentNode.worldRotation.transform( this.worldLocation );
+			this.worldLocation.add( this.parentNode.worldLocation );
 		}else
 		{
 			this.worldLocation.set( this.location );
 			this.worldRotation.set( this.rotation );
 		}
 		
-		this.UpdateChildNodes();
-	}
-	
-	private void UpdateChildNodes()
-	{
+		if( updateMatrices )
+			this.worldTransformationMatrix.identity().translationRotateScale( this.worldLocation, this.worldRotation, this.scale );
+		
 		for( SceneNode child : this.childNodes )
-			child.UpdateDrawState();
+			child.UpdateTransformationState( updateMatrices );
 	}
 	
 	public boolean UseGlobalUpdate()
@@ -145,12 +206,16 @@ public abstract class SceneNode
 	{
 		this.childNodes.add( child );
 		child.parentNode = this;
+		this.UpdateTransformationState( false );
 	}
 	
 	public void RemoveChild( SceneNode child )
 	{
 		this.childNodes.remove( child );
 		child.parentNode = null;
+		child.SetWorldLocation( child.worldLocation );
+		child.SetWorldRotation( child.worldRotation );
+		child.UpdateTransformationState( false );
 	}
 	
 	public Set<SceneNode> GetChildren()

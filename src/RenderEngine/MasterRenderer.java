@@ -216,7 +216,7 @@ public class MasterRenderer extends Renderer
 	public void Render()
 	{
 		// Update DrawableSceneNodes world transformation matrices:
-		this.UpdateRenderState();
+		this.UpdateTransformationState();
 		
 		// Draw shadows:
 		this.RenderShadows();
@@ -235,21 +235,21 @@ public class MasterRenderer extends Renderer
 		Display.UpdateScreen();
 	}
 	
-	private void UpdateRenderState()
+	// should be parallelized
+	private void UpdateTransformationState()
 	{
-		// should be parallelized
 		for( DrawableSceneNode sceneNode : this.sceneNodesBank.keySet() )
 		{
 			if( sceneNode.UseGlobalUpdate() )
 			{
-				sceneNode.UpdateDrawState();
+				sceneNode.UpdateTransformationState( true );
 			}
 		}
 		for( CameraBase camera : this.cameras )
 		{
 			if( camera.UseGlobalUpdate() )
 			{
-				camera.UpdateDrawState();
+				camera.UpdateTransformationState( true );
 			}
 		}
 	}

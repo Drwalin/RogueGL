@@ -104,7 +104,7 @@ public class GameLoop
 			
 			DrawableSceneNode palm1 = new DrawableSceneNode( renderer, palmModel, new Vector3f( 0, 2, 10 ), new Quaternionf(), new Vector3f( 0.2f, 0.2f, 0.2f ) );
 			DrawableSceneNode palm2 = new DrawableSceneNode( renderer, palmModel, new Vector3f( 0, 2, 17 ), new Quaternionf(), new Vector3f( 0.2f, 0.2f, 0.2f ) );
-			DrawableSceneNode sceneNode = new DrawableSceneNode( renderer, crateModel, new Vector3f( 0, 3, -5 ), new Quaternionf(), new Vector3f( 0.01f, 0.01f, 0.01f ) );
+			DrawableSceneNode sceneNode = new DrawableSceneNode( renderer, crateModel, new Vector3f( -6, 3, -2 ), new Quaternionf(), new Vector3f( 0.01f, 0.01f, 0.01f ) );
 			DrawableSceneNode barrelNode = new DrawableSceneNode( renderer, barrelModel, new Vector3f( 4, 2, 0 ), new Quaternionf(), new Vector3f( 0.1f, 0.1f, 0.1f ) );
 			DrawableSceneNode multiMatNode = new DrawableSceneNode( renderer, multiMatModel, new Vector3f( 0, 0, 30 ), new Quaternionf(), new Vector3f( 1, 1, 1 ) );
 			DrawableSceneNode pilarNode = new DrawableSceneNode( renderer, pilarModel, new Vector3f( 0, 2, 5 ), new Quaternionf(), new Vector3f( 1, 1, 1 ) );
@@ -128,26 +128,27 @@ public class GameLoop
 				renderer.AddSceneNode( node );
 			}
 			
-			Light light = new Light( 70, 0.1f, 300, new Vector3f( 0, 2.3f, 30 ), new Quaternionf().rotateX( 0.1f ), new Vector3f( 1, 1, 1 ), new Vector3f( 1, .7f, .4f ), new Vector3f( .2f, .001f, .001f ), 10 );
+			Light light = new Light( 70, 0.1f, 300, new Vector3f( 0, 2.3f, 30 ), new Quaternionf().rotateX( -0.1f ), new Vector3f( 1, 1, 1 ), new Vector3f( 1, .7f, .4f ), new Vector3f( .2f, .001f, .001f ), 10 );
 			renderer.AddLight( light );
 			GameLoop.LIGHT = light;
-			Light light2 = new Light( 80, 0.1f, 300, new Vector3f( 35, 4.3f, 50 ), new Quaternionf().rotateX( 0.2f ), new Vector3f( 1, 1, 1 ), new Vector3f( .4f, .7f, 1 ), new Vector3f( .2f, .001f, .001f ), 0 );
+			Light light2 = new Light( 80, 0.1f, 300, new Vector3f( 35, 4.3f, 50 ), new Quaternionf().rotateX( -0.2f ), new Vector3f( 1, 1, 1 ), new Vector3f( .4f, .7f, 1 ), new Vector3f( .2f, .001f, .001f ), 0 );
 			renderer.AddLight( light2 );
-			Light light3 = new Light( 90, 0.1f, 300, new Vector3f( -20, 30, 45 ), new Quaternionf().rotateX( 0.8f ), new Vector3f( 1, 1, 1 ), new Vector3f( 1, .4f, .1f ), new Vector3f( .2f, .001f, .001f ), 0 );
+			Light light3 = new Light( 90, 0.1f, 300, new Vector3f( -20,30, 45 ), new Quaternionf().rotateX( -0.8f ), new Vector3f( 1, 1, 1 ), new Vector3f( 1, .4f, .1f ), new Vector3f( .2f, .001f, .001f ), 40 );
 			renderer.AddLight( light3 );
 			Light light4 = new Light( 80, 0.1f, 300, new Vector3f( 0, -0.3f, 0 ), new Quaternionf(), new Vector3f( 1, 1, 1 ), new Vector3f( 1, .7f, .4f ), new Vector3f( .2f, .001f, .001f ), 10 );
 			renderer.AddLight( light4 );
+			light4.Disable();
 			
 			Camera camera = new Camera( 70, 0.1f, 400, new Vector3f( 0, 1, 1 ) );
+			renderer.AddCamera( camera );
 			renderer.SetMainCamera( camera );
-			camera.AddChild( light4 );
 			
 			while( !Display.isCloseRequested() )
 			{
 				beginTime = GameLoop.GetTime();
 				
-				light3.GetRotation().rotateY( GameLoop.deltaTime * 1.2f );
-				light2.GetRotation().rotateY( GameLoop.deltaTime );
+				light3.GetLocalRotation().rotateLocalY( GameLoop.deltaTime * 1.2f );
+				light2.GetLocalRotation().rotateLocalY( GameLoop.deltaTime );
 				
 				if( Keyboard.isKeyDown( Keyboard.KEY_N ) )
 					light.SetInnerSpotAngle( light.GetInnerSpotAngle() - 20 * GameLoop.deltaTime );
@@ -160,7 +161,12 @@ public class GameLoop
 				if( Keyboard.isKeyDown( Keyboard.KEY_F ) && GameLoop.wasPressedF == false )
 				{
 					if( light4.GetParent() == null )
+					{
+						light4.SetLocalLocation( new Vector3f( 0, -1, 0 ) );
+						light4.SetLocalRotation( new Quaternionf() );
 						camera.AddChild( light4 );
+						light4.Enable();
+					}
 					else
 						camera.RemoveChild( light4 );
 				}
@@ -173,7 +179,7 @@ public class GameLoop
 				if( multiMatNode.GetScale().length() < 0.01 )
 					multiMatNode.GetScale().set( 0.01f, 0.01f, 0.01f );
 				
-				sceneNode.GetRotation().rotateXYZ( GameLoop.deltaTime, GameLoop.deltaTime*0.5f, GameLoop.deltaTime*0.3f );
+				sceneNode.GetLocalRotation().rotateXYZ( GameLoop.deltaTime, GameLoop.deltaTime*0.5f, GameLoop.deltaTime*0.3f );
 				
 				camera.Move();
 				
