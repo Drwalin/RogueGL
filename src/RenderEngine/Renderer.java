@@ -91,17 +91,16 @@ public class Renderer
 		this.currentCamera = camera;
 		camera.GetFrameBuffer().Bind();
 		
-		GL11.glDisable( GL11.GL_ALPHA );
+		GL11.glEnable( GL11.GL_ALPHA );
 		GL11.glEnable( GL11.GL_DEPTH );
 		GL11.glEnable( GL11.GL_DEPTH_TEST );
+		GL11.glBlendFunc( GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_SRC_ALPHA );
 		
 		if( camera instanceof Light )
 		{
 			this.drawingShadow = true;
 			
 			GL11.glClear( GL11.GL_DEPTH_BUFFER_BIT );
-			// GL11.glCullFace( GL11.GL_FRONT );
-			// GL11.glCullFace( GL11.GL_BACK );
 			GL11.glDisable( GL11.GL_CULL_FACE );
 		}else
 		{

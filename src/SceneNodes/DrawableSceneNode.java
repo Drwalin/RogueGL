@@ -13,14 +13,14 @@ public class DrawableSceneNode extends SceneNode
 	private TexturedModel model;
 	private MasterRenderer renderer;
 
-	public DrawableSceneNode( MasterRenderer renderer, TexturedModel model, Vector3f location, Vector3f rotation, Vector3f scale )
+	public DrawableSceneNode( MasterRenderer renderer, TexturedModel model, Vector3f location, Quaternionf rotation, Vector3f scale )
 	{
 		super( location, rotation, scale );
 		this.model = model;
 		this.renderer = renderer;
 	}
 
-	public DrawableSceneNode( MasterRenderer renderer, TexturedModel model, Vector3f location, Vector3f rotation )
+	public DrawableSceneNode( MasterRenderer renderer, TexturedModel model, Vector3f location, Quaternionf rotation )
 	{
 		super( location, rotation );
 		this.model = model;

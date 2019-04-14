@@ -13,20 +13,20 @@ import Util.Maths;
 public abstract class SceneNode
 {
 	protected Vector3f location;
-	protected Vector3f rotation;
+	protected Quaternionf rotation;
 	protected Vector3f scale;
 	
 	protected Vector3f worldLocation = new Vector3f();
-	protected Vector3f worldRotation = new Vector3f();
+	protected Quaternionf worldRotation = new Quaternionf();
 	
-	protected Matrix4f worldTransformationMatrix;
+	protected Matrix4f worldTransformationMatrix = new Matrix4f();
 	
 	private boolean enabled;
 	
 	protected SceneNode parentNode;
 	protected Set<SceneNode> childNodes = new HashSet<SceneNode>();
 	
-	public SceneNode( Vector3f location, Vector3f rotation, Vector3f scale )
+	public SceneNode( Vector3f location, Quaternionf rotation, Vector3f scale )
 	{
 		this.location = location;
 		this.rotation = rotation;
@@ -34,7 +34,7 @@ public abstract class SceneNode
 		this.enabled = true;
 	}
 	
-	public SceneNode( Vector3f location, Vector3f rotation )
+	public SceneNode( Vector3f location, Quaternionf rotation )
 	{
 		this.location = location;
 		this.rotation = rotation;
@@ -45,7 +45,7 @@ public abstract class SceneNode
 	public SceneNode( Vector3f location )
 	{
 		this.location = location;
-		this.rotation = new Vector3f( 0, 0, 0 );
+		this.rotation = new Quaternionf();
 		this.scale = new Vector3f( 1, 1, 1 );
 		this.enabled = true;
 	}
@@ -66,17 +66,17 @@ public abstract class SceneNode
 		return this.worldLocation;
 	}
 	
-	public Vector3f GetRotation()
+	public Quaternionf GetRotation()
 	{
 		return this.rotation;
 	}
 	
-	public void SetRotation( Vector3f rotation )
+	public void SetRotation( Quaternionf rotation )
 	{
 		this.rotation = rotation;
 	}
 	
-	public Vector3f GetWorldRotation() throws Exception
+	public Quaternionf GetWorldRotation() throws Exception
 	{
 		throw new Exception( "SceneNode.GetWorldRotation() is not done yet, no ide how to do it" );
 //		return this.worldRotation;
@@ -114,11 +114,10 @@ public abstract class SceneNode
 	
 	public void UpdateDrawState()
 	{
-		this.worldTransformationMatrix = Maths.CreateTransformMatrix( this.location, this.rotation, this.scale );
+		this.worldTransformationMatrix.identity().translationRotateScale( this.location, this.rotation, this.scale );
 		if( this.parentNode != null )
 		{
 			this.parentNode.worldTransformationMatrix.mul( this.worldTransformationMatrix, this.worldTransformationMatrix );
-			//this.worldTransformationMatrix.set( this.parentNode.worldTransformationMatrix ).mul( this.worldTransformationMatrix );
 			Vector4f t = new Vector4f( this.location.x, this.location.y, this.location.z, 1 );
 			this.worldTransformationMatrix.transform( t );
 			this.worldLocation.set( t.x, t.y, t.z );

@@ -102,15 +102,15 @@ public class GameLoop
 				citadelModel = new TexturedModel( model, new MaterialShineable( shader, false, 2.f, .7f, textureRustyMetal ), new MaterialShineable( shader, false, 2.f, .7f, textureCrate ) );
 			}
 			
-			DrawableSceneNode palm1 = new DrawableSceneNode( renderer, palmModel, new Vector3f( 0, 2, 10 ), new Vector3f( 0, 0, 0 ), new Vector3f( 0.2f, 0.2f, 0.2f ) );
-			DrawableSceneNode palm2 = new DrawableSceneNode( renderer, palmModel, new Vector3f( 0, 2, 17 ), new Vector3f( 0, 3.14159f, 0 ), new Vector3f( 0.2f, 0.2f, 0.2f ) );
-			DrawableSceneNode sceneNode = new DrawableSceneNode( renderer, crateModel, new Vector3f( 0, 0, -10 ), new Vector3f( 0.2f, 0.3f, 0.5f ), new Vector3f( 0.01f, 0.01f, 0.01f ) );
-			DrawableSceneNode barrelNode = new DrawableSceneNode( renderer, barrelModel, new Vector3f( 4, 2, 0 ), new Vector3f( 0, 0, 0 ), new Vector3f( 0.1f, 0.1f, 0.1f ) );
-			DrawableSceneNode multiMatNode = new DrawableSceneNode( renderer, multiMatModel, new Vector3f( 0, 0, 30 ), new Vector3f( 0, 0, 0 ), new Vector3f( 1, 1, 1 ) );
-			DrawableSceneNode pilarNode = new DrawableSceneNode( renderer, pilarModel, new Vector3f( 0, 2, 5 ), new Vector3f( 0, 0, 0 ), new Vector3f( 1, 1, 1 ) );
-			DrawableSceneNode boulderNode = new DrawableSceneNode( renderer, boulderModel, new Vector3f( 0, 3, 7 ), new Vector3f( 0, 0, 0 ), new Vector3f( .2f, .2f, .2f ) );
-			DrawableSceneNode citadelNode = new DrawableSceneNode( renderer, citadelModel, new Vector3f( -20, 0, 45 ), new Vector3f( -(float)java.lang.Math.PI / 2, 0, 0 ), new Vector3f( .1f, .1f, .1f ) );
-			DrawableSceneNode cameraNode = new DrawableSceneNode( renderer, cameraModel, new Vector3f( -10, 2, 25 ), new Vector3f( -(float)java.lang.Math.PI / 2, 0, 0 ), new Vector3f( 1, 1, 1 ) );
+			DrawableSceneNode palm1 = new DrawableSceneNode( renderer, palmModel, new Vector3f( 0, 2, 10 ), new Quaternionf(), new Vector3f( 0.2f, 0.2f, 0.2f ) );
+			DrawableSceneNode palm2 = new DrawableSceneNode( renderer, palmModel, new Vector3f( 0, 2, 17 ), new Quaternionf(), new Vector3f( 0.2f, 0.2f, 0.2f ) );
+			DrawableSceneNode sceneNode = new DrawableSceneNode( renderer, crateModel, new Vector3f( 0, 3, -5 ), new Quaternionf(), new Vector3f( 0.01f, 0.01f, 0.01f ) );
+			DrawableSceneNode barrelNode = new DrawableSceneNode( renderer, barrelModel, new Vector3f( 4, 2, 0 ), new Quaternionf(), new Vector3f( 0.1f, 0.1f, 0.1f ) );
+			DrawableSceneNode multiMatNode = new DrawableSceneNode( renderer, multiMatModel, new Vector3f( 0, 0, 30 ), new Quaternionf(), new Vector3f( 1, 1, 1 ) );
+			DrawableSceneNode pilarNode = new DrawableSceneNode( renderer, pilarModel, new Vector3f( 0, 2, 5 ), new Quaternionf(), new Vector3f( 1, 1, 1 ) );
+			DrawableSceneNode boulderNode = new DrawableSceneNode( renderer, boulderModel, new Vector3f( 0, 3, 7 ), new Quaternionf(), new Vector3f( .2f, .2f, .2f ) );
+			DrawableSceneNode citadelNode = new DrawableSceneNode( renderer, citadelModel, new Vector3f( -20, 0, 45 ), new Quaternionf().rotateX( -(float)java.lang.Math.PI / 2 ), new Vector3f( .1f, .1f, .1f ) );
+			DrawableSceneNode cameraNode = new DrawableSceneNode( renderer, cameraModel, new Vector3f( -10, 2, 25 ), new Quaternionf().rotateX( -(float)java.lang.Math.PI / 2 ), new Vector3f( 1, 1, 1 ) );
 			
 			renderer.AddSceneNode( palm1 );
 			renderer.AddSceneNode( palm2 );
@@ -124,21 +124,21 @@ public class GameLoop
 			
 			for( int i = 0; i < 100; ++i )
 			{
-				DrawableSceneNode node = new DrawableSceneNode( renderer, citadelModel, new Vector3f( -20 + (float)java.lang.Math.random() * 800 - 400, 0, 45 + (float)java.lang.Math.random() * 800 - 400 ), new Vector3f( -(float)java.lang.Math.PI / 2, 0, 0 ), new Vector3f( (float)java.lang.Math.random() * 0.05f + 0.05f, (float)java.lang.Math.random() * 0.05f + 0.05f, (float)java.lang.Math.random() * 0.05f + 0.05f ) );
+				DrawableSceneNode node = new DrawableSceneNode( renderer, citadelModel, new Vector3f( -20 + (float)java.lang.Math.random() * 800 - 400, 0, 45 + (float)java.lang.Math.random() * 800 - 400 ), new Quaternionf().rotateY( (float)java.lang.Math.random() * (float)java.lang.Math.PI * 2 ).rotateX( -(float)java.lang.Math.PI / 2 ), new Vector3f( (float)java.lang.Math.random() * 0.05f + 0.05f, (float)java.lang.Math.random() * 0.05f + 0.05f, (float)java.lang.Math.random() * 0.05f + 0.05f ) );
 				renderer.AddSceneNode( node );
 			}
 			
-			Light light = new Light( 70, 0.1f, 300, new Vector3f( 0, 2.3f, 30 ), new Vector3f( 0.1f, 0, 0 ), new Vector3f( 1, 1, 1 ), new Vector3f( 1, .7f, .4f ), new Vector3f( .2f, .001f, .001f ), 10 );
+			Light light = new Light( 70, 0.1f, 300, new Vector3f( 0, 2.3f, 30 ), new Quaternionf().rotateX( 0.1f ), new Vector3f( 1, 1, 1 ), new Vector3f( 1, .7f, .4f ), new Vector3f( .2f, .001f, .001f ), 10 );
 			renderer.AddLight( light );
 			GameLoop.LIGHT = light;
-			Light light2 = new Light( 80, 0.1f, 300, new Vector3f( 35, 4.3f, 50 ), new Vector3f( 0.2f, 0, 0 ), new Vector3f( 1, 1, 1 ), new Vector3f( .4f, .7f, 1 ), new Vector3f( .2f, .001f, .001f ), 0 );
+			Light light2 = new Light( 80, 0.1f, 300, new Vector3f( 35, 4.3f, 50 ), new Quaternionf().rotateX( 0.2f ), new Vector3f( 1, 1, 1 ), new Vector3f( .4f, .7f, 1 ), new Vector3f( .2f, .001f, .001f ), 0 );
 			renderer.AddLight( light2 );
-			Light light3 = new Light( 90, 0.1f, 300, new Vector3f( -20, 30, 45 ), new Vector3f( 0.8f, 0, 0 ), new Vector3f( 1, 1, 1 ), new Vector3f( 1, .4f, .1f ), new Vector3f( .2f, .001f, .001f ), 0 );
+			Light light3 = new Light( 90, 0.1f, 300, new Vector3f( -20, 30, 45 ), new Quaternionf().rotateX( 0.8f ), new Vector3f( 1, 1, 1 ), new Vector3f( 1, .4f, .1f ), new Vector3f( .2f, .001f, .001f ), 0 );
 			renderer.AddLight( light3 );
-			Light light4 = new Light( 80, 0.1f, 300, new Vector3f( 0, -0.3f, 0 ), new Vector3f( 0, 0, 0 ), new Vector3f( 1, 1, 1 ), new Vector3f( 1, .7f, .4f ), new Vector3f( .2f, .001f, .001f ), 10 );
+			Light light4 = new Light( 80, 0.1f, 300, new Vector3f( 0, -0.3f, 0 ), new Quaternionf(), new Vector3f( 1, 1, 1 ), new Vector3f( 1, .7f, .4f ), new Vector3f( .2f, .001f, .001f ), 10 );
 			renderer.AddLight( light4 );
 			
-			Camera camera = new Camera( 70, 0.1f, 400, new Vector3f( 0, 0, 1 ) );
+			Camera camera = new Camera( 70, 0.1f, 400, new Vector3f( 0, 1, 1 ) );
 			renderer.SetMainCamera( camera );
 			camera.AddChild( light4 );
 			
@@ -146,8 +146,8 @@ public class GameLoop
 			{
 				beginTime = GameLoop.GetTime();
 				
-				light3.GetRotation().add( new Vector3f( 0, GameLoop.deltaTime * 1.2f, 0 ) );
-				light2.GetRotation().add( new Vector3f( 0, GameLoop.deltaTime, 0 ) );
+				light3.GetRotation().rotateY( GameLoop.deltaTime * 1.2f );
+				light2.GetRotation().rotateY( GameLoop.deltaTime );
 				
 				if( Keyboard.isKeyDown( Keyboard.KEY_N ) )
 					light.SetInnerSpotAngle( light.GetInnerSpotAngle() - 20 * GameLoop.deltaTime );
@@ -173,11 +173,7 @@ public class GameLoop
 				if( multiMatNode.GetScale().length() < 0.01 )
 					multiMatNode.GetScale().set( 0.01f, 0.01f, 0.01f );
 				
-				if( Keyboard.isKeyDown( Keyboard.KEY_R ) )
-					light.GetRotation().y += GameLoop.deltaTime;
-				sceneNode.GetRotation().y += GameLoop.deltaTime;
-				sceneNode.GetRotation().x += GameLoop.deltaTime * 0.5f;
-				sceneNode.GetRotation().z += GameLoop.deltaTime * 0.3f;
+				sceneNode.GetRotation().rotateXYZ( GameLoop.deltaTime, GameLoop.deltaTime*0.5f, GameLoop.deltaTime*0.3f );
 				
 				camera.Move();
 				

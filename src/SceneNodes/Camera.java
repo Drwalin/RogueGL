@@ -14,12 +14,12 @@ import Util.Mouse;
 
 public class Camera extends CameraBase
 {
-	public Camera( float fov, float zNear, float zFar, Vector3f location, Vector3f rotation, Vector3f scale )
+	public Camera( float fov, float zNear, float zFar, Vector3f location, Quaternionf rotation, Vector3f scale )
 	{
 		super( new FrameBuffer(Display.getWidth(),Display.getHeight(),true,4), fov, zNear, zFar, location, rotation, scale );		
 	}
 	
-	public Camera( float fov, float zNear, float zFar, Vector3f location, Vector3f rotation )
+	public Camera( float fov, float zNear, float zFar, Vector3f location, Quaternionf rotation )
 	{
 		super( new FrameBuffer(Display.getWidth(),Display.getHeight(),true,4), fov, zNear, zFar, location, rotation );		
 	}
@@ -28,7 +28,8 @@ public class Camera extends CameraBase
 	{
 		super( new FrameBuffer(Display.getWidth(),Display.getHeight(),true,4), fov, zNear, zFar, location );		
 	}
-
+	
+	protected Vector3f eulerAngles = new Vector3f();
 
 	public void Move()
 	{
@@ -36,13 +37,13 @@ public class Camera extends CameraBase
 		Vector3f temp2 = new Vector3f();
 		Vector4f temp4 = new Vector4f();
 
-		float movementSpeed = 10;
+		float movementSpeed = GameLoop.deltaTime * 10;
 		float rotationSpeed = 1.5f;
 
 		if( Keyboard.isKeyDown( Keyboard.KEY_SPACE ) )
-			this.location.y += GameLoop.deltaTime * movementSpeed;
+			this.location.y += movementSpeed;
 		if( Keyboard.isKeyDown( Keyboard.KEY_LCONTROL ) )
-			this.location.y -= GameLoop.deltaTime * movementSpeed;
+			this.location.y -= movementSpeed;
 		if( Keyboard.isKeyDown( Keyboard.KEY_W ) )
 			temp.add( Maths.VEC_FORWARD );
 		if( Keyboard.isKeyDown( Keyboard.KEY_A ) )
@@ -51,43 +52,30 @@ public class Camera extends CameraBase
 			temp.add( Maths.VEC_BACKWARD );
 		if( Keyboard.isKeyDown( Keyboard.KEY_D ) )
 			temp.add( Maths.VEC_RIGHT );
-
+		
 		if( Keyboard.isKeyDown( Keyboard.KEY_LEFT ) )
-			this.rotation.y += GameLoop.deltaTime * rotationSpeed;
+			eulerAngles.y += GameLoop.deltaTime * rotationSpeed;
 		if( Keyboard.isKeyDown( Keyboard.KEY_RIGHT ) )
-			this.rotation.y -= GameLoop.deltaTime * rotationSpeed;
+			eulerAngles.y -= GameLoop.deltaTime * rotationSpeed;
 		if( Keyboard.isKeyDown( Keyboard.KEY_UP ) )
-			this.rotation.x += GameLoop.deltaTime * rotationSpeed;
+			eulerAngles.x += GameLoop.deltaTime * rotationSpeed;
 		if( Keyboard.isKeyDown( Keyboard.KEY_DOWN ) )
-			this.rotation.x -= GameLoop.deltaTime * rotationSpeed;
+			eulerAngles.x -= GameLoop.deltaTime * rotationSpeed;
+		
+		this.eulerAngles.x -= Mouse.GetDY() * 0.002f;
+		this.eulerAngles.y -= Mouse.GetDX() * 0.002f;
 
-		this.rotation.x -= Mouse.GetDY() * 0.004f;
-		this.rotation.y -= Mouse.GetDX() * 0.004f;
+		if( this.eulerAngles.x > java.lang.Math.PI/2 )
+			this.eulerAngles.x = (float) java.lang.Math.PI/2;
+		else if( this.eulerAngles.x < -java.lang.Math.PI/2 )
+			this.eulerAngles.x = (float) -java.lang.Math.PI/2;
+		
+		this.rotation.identity().rotateY( this.eulerAngles.y ).rotateX( this.eulerAngles.x );
 		Mouse.NullPosition();
 
-		if( this.rotation.x > java.lang.Math.PI * 0.5 )
-			this.rotation.x = (float) java.lang.Math.PI * 0.5f;
-		else if( this.rotation.x < -java.lang.Math.PI * 0.5 )
-			this.rotation.x = -(float) java.lang.Math.PI * 0.5f;
-
-		if( temp.lengthSquared() > 0.01f )
-		{
-			Matrix4f matrix = new Matrix4f();
-			matrix.rotate( this.rotation.y, Maths.VEC_Y );
-			matrix.rotate( this.rotation.x, Maths.VEC_X );
-			temp4.set( temp.x, temp.y, temp.z, 1 );
-			matrix.transform( temp4 );
-
-			temp.x = temp4.x;
-			temp.y = temp4.y;
-			temp.z = temp4.z;
-			temp.normalize( temp2 );
-
-			this.location.x += temp2.x * GameLoop.deltaTime * movementSpeed;
-			this.location.y += temp2.y * GameLoop.deltaTime * movementSpeed;
-			this.location.z += temp2.z * GameLoop.deltaTime * movementSpeed;
-		}
-
+		this.location.add( this.rotation.transform( temp.mul( movementSpeed ) ) );
+		
+		/*
 		if( Keyboard.isKeyDown( Keyboard.KEY_1 ) )
 		{
 			this.location = new Vector3f( 0, 1.5f, 4 );
@@ -118,5 +106,6 @@ public class Camera extends CameraBase
 			this.location = new Vector3f( GameLoop.LIGHT.GetWorldLocation() );
 			this.rotation = new Vector3f( GameLoop.LIGHT.GetRotation() );
 		}
+		*/
 	}
 }

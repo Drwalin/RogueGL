@@ -33,7 +33,7 @@ public abstract class CameraBase extends SceneNode
 	protected Matrix4f projectionMatrix = new Matrix4f();
 	protected Matrix4f viewMatrix = new Matrix4f();
 	
-	public CameraBase( FrameBuffer frameBuffer, float fov, float zNear, float zFar, Vector3f location, Vector3f rotation, Vector3f scale )
+	public CameraBase( FrameBuffer frameBuffer, float fov, float zNear, float zFar, Vector3f location, Quaternionf rotation, Vector3f scale )
 	{
 		super( location, rotation, scale );
 		this.frameBuffer = frameBuffer;
@@ -43,7 +43,7 @@ public abstract class CameraBase extends SceneNode
 		this.UpdateDrawState();
 	}
 	
-	public CameraBase( FrameBuffer frameBuffer, float fov, float zNear, float zFar, Vector3f location, Vector3f rotation )
+	public CameraBase( FrameBuffer frameBuffer, float fov, float zNear, float zFar, Vector3f location, Quaternionf rotation )
 	{
 		super( location, rotation );
 		this.frameBuffer = frameBuffer;

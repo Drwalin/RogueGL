@@ -13,7 +13,7 @@ public class Light extends CameraBase
 	private Vector3f attenuation;
 	private float innerSpotAngle;
 
-	public Light( float fov, float zNear, float zFar, Vector3f location, Vector3f rotation, Vector3f scale, Vector3f color, Vector3f attenuation, float innerSpotAngle )
+	public Light( float fov, float zNear, float zFar, Vector3f location, Quaternionf rotation, Vector3f scale, Vector3f color, Vector3f attenuation, float innerSpotAngle )
 	{
 		super( new FrameBuffer(256,256,true,0), fov, zNear, zFar, location, rotation, scale );
 		this.color = color;
