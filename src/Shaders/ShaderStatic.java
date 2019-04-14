@@ -3,9 +3,8 @@
 
 package Shaders;
 
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL13;
-import org.lwjgl.util.vector.*;
+import org.lwjgl.opengl.*;
+import org.joml.*;
 
 import Materials.Material;
 import Materials.MaterialShineable;
@@ -66,7 +65,14 @@ public class ShaderStatic extends Shader
 	public void SetUniforms( DrawableSceneNode sceneNode, Renderer renderer, Material material )
 	{
 		this.worldTransformUniform.Set( sceneNode.GetTransformationMatrix() );
-		Matrix4f.mul( renderer.GetCombinedMatrix(), sceneNode.GetTransformationMatrix(), this.fullMatrixTransform );
+		this.fullMatrixTransform.set( renderer.GetCombinedMatrix() ).mul( sceneNode.GetTransformationMatrix() );
+		// CHECK ORDER
+		// CHECK ORDER
+		// CHECK ORDER
+		// CHECK ORDER
+		// CHECK ORDER
+		// CHECK ORDER
+		// CHECK ORDER
 		this.viewTransformUniform.Set( renderer.GetViewMatrix() );
 		this.projectionTransformUniform.Set( renderer.GetProjectionMatrix() );
 		this.combinedTransformUniform.Set( this.fullMatrixTransform );

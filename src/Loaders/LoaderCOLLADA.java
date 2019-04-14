@@ -8,8 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.lwjgl.util.vector.Vector2f;
-import org.lwjgl.util.vector.Vector3f;
+import org.joml.*;
 
 import Animations.AnimationSet;
 import Animations.Armature;
@@ -164,26 +163,26 @@ public class LoaderCOLLADA
 				uv3.x = uvs.get(v3i * 2);
 				uv3.y = uvs.get(v3i * 2 + 1);
 
-				Vector3f.sub( p2, p1, pA );
-				Vector3f.sub( p3, p1, pB );
+				pA.set(p2).sub( p1 );
+				pB.set(p3).sub( p1 );
 
-				Vector2f.sub( uv2, uv1, uvA );
-				Vector2f.sub( uv3, uv1, uvB );
+				uvA.set(uv2).sub( uv1 );
+				uvB.set(uv3).sub( uv1 );
 
 				float r = 1.0F / (uvA.x * uvB.y - uvB.x * uvA.y);
-				pA.scale( uvB.y );
-				pB.scale( uvA.y );
-				Vector3f tang = Vector3f.sub( pA, pB, null );
-				tang.scale( r );
+				pA.mul( uvB.y );
+				pB.mul( uvA.y );
+				Vector3f tang = new Vector3f(pA).sub( pB );
+				tang.mul( r );
 
-				Vector3f.add( tangent[v1i], tang, tangent[v1i] );
-				Vector3f.add( tangent[v2i], tang, tangent[v2i] );
-				Vector3f.add( tangent[v3i], tang, tangent[v3i] );
+				tangent[v1i].add( tang );
+				tangent[v2i].add( tang );
+				tangent[v3i].add( tang );
 			}
 
 			for( int i = 0; i < combinedVerticesNumber; ++i )
 			{
-				tangent[i].normalise();
+				tangent[i].normalize();
 				
 				tangents.add( tangent[i].x );
 				tangents.add( tangent[i].y );

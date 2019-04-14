@@ -3,8 +3,7 @@
 
 package SceneNodes;
 
-import org.lwjgl.input.*;
-import org.lwjgl.util.vector.*;
+import org.joml.*;
 
 import RenderEngine.FrameBuffer;
 
@@ -42,8 +41,6 @@ public abstract class CameraBase extends SceneNode
 		this.zNear = zNear;
 		this.zFar = zFar;
 		this.UpdateDrawState();
-		Mouse.setClipMouseCoordinatesToWindow( true );
-		Mouse.setGrabbed( true );
 	}
 	
 	public CameraBase( FrameBuffer frameBuffer, float fov, float zNear, float zFar, Vector3f location, Vector3f rotation )
@@ -54,8 +51,6 @@ public abstract class CameraBase extends SceneNode
 		this.zNear = zNear;
 		this.zFar = zFar;
 		this.UpdateDrawState();
-		Mouse.setClipMouseCoordinatesToWindow( true );
-		Mouse.setGrabbed( true );
 	}
 	
 	public CameraBase( FrameBuffer frameBuffer, float fov, float zNear, float zFar, Vector3f location )
@@ -66,8 +61,6 @@ public abstract class CameraBase extends SceneNode
 		this.zNear = zNear;
 		this.zFar = zFar;
 		this.UpdateDrawState();
-		Mouse.setClipMouseCoordinatesToWindow( true );
-		Mouse.setGrabbed( true );
 	}
 	
 	@Override
@@ -77,20 +70,20 @@ public abstract class CameraBase extends SceneNode
 		
 		// Update projectionMatrix:
 		float aspectRatio = (float)this.frameBuffer.GetWidth() / (float)this.frameBuffer.GetHeight();
-		float y_scale = (float)(1f / Math.tan( Math.toRadians( this.fov / 2f ) ));
+		float y_scale = (float)(1f / java.lang.Math.tan( java.lang.Math.toRadians( this.fov / 2f ) ));
 		float x_scale = y_scale / aspectRatio;
 		float frustum_length = this.zFar - this.zNear;
 		
-		this.projectionMatrix.setIdentity();
-		this.projectionMatrix.m00 = x_scale;
-		this.projectionMatrix.m11 = y_scale;
-		this.projectionMatrix.m22 = -((this.zFar + this.zNear) / frustum_length);
-		this.projectionMatrix.m23 = -1;
-		this.projectionMatrix.m32 = -((2 * this.zNear * this.zFar) / frustum_length);
-		this.projectionMatrix.m33 = 0;
+		this.projectionMatrix.identity();
+		this.projectionMatrix.m00( x_scale );
+		this.projectionMatrix.m11( y_scale );
+		this.projectionMatrix.m22( -((this.zFar + this.zNear) / frustum_length) );
+		this.projectionMatrix.m23( -1 );
+		this.projectionMatrix.m32( -((2 * this.zNear * this.zFar) / frustum_length) );
+		this.projectionMatrix.m33( 0 );
 		
 		// Update viewMatrix:
-		this.viewMatrix.load( this.worldTransformationMatrix );
+		this.viewMatrix.set( this.worldTransformationMatrix );
 		this.viewMatrix.invert();
 	}
 	
@@ -111,7 +104,8 @@ public abstract class CameraBase extends SceneNode
 	
 	public Vector3f GetForward()
 	{
-		Vector4f r = Matrix4f.transform( Matrix4f.invert( this.viewMatrix,  null ), new Vector4f(0,0,-1,0), null );
-		return new Vector3f( r.x, r.y, r.z );
+		Vector4f t = new Vector4f(0,0,-1,0);
+		new Matrix4f(this.viewMatrix).invert().transform( t );
+		return new Vector3f( t.x, t.y, t.z );
 	}
 }

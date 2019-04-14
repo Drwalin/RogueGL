@@ -3,9 +3,7 @@
 
 package Game;
 
-import org.lwjgl.input.*;
-import org.lwjgl.opengl.Display;
-import org.lwjgl.util.vector.Vector3f;
+import org.joml.*;
 
 import Loaders.Loader;
 import Materials.*;
@@ -15,6 +13,7 @@ import SceneNodes.Camera;
 import SceneNodes.DrawableSceneNode;
 import SceneNodes.Light;
 import Shaders.*;
+import Util.Keyboard;
 
 public class GameLoop
 {
@@ -36,7 +35,7 @@ public class GameLoop
 		{
 			float beginTime, endTime;
 			
-			DisplayManager.CreateDisplay();
+			Display.CreateDisplay( "RogueLWJGL3" );
 			Loader loader = new Loader();
 			MasterRenderer renderer = new MasterRenderer();
 			ShaderStatic shader = new ShaderStatic();
@@ -92,8 +91,7 @@ public class GameLoop
 			}
 			{
 				RawModel model = loader.LoadCOLLADA( "static/TechDemoMap", true );
-				multiMatModel = new TexturedModel( model, new MaterialShineable( shaderNormalMapped, false, 12.0f, 0.93f, textureCrate, textureCrateNormal ),
-						new MaterialShineable( shaderNormalMapped, false, 11.0f, 0.93f, textureBarrel, textureBarrelNormal ) );
+				multiMatModel = new TexturedModel( model, new MaterialShineable( shaderNormalMapped, false, 12.0f, 0.93f, textureCrate, textureCrateNormal ), new MaterialShineable( shaderNormalMapped, false, 11.0f, 0.93f, textureBarrel, textureBarrelNormal ) );
 			}
 			{
 				RawModel model = loader.LoadOBJ( "pilar", true );
@@ -111,8 +109,8 @@ public class GameLoop
 			DrawableSceneNode multiMatNode = new DrawableSceneNode( renderer, multiMatModel, new Vector3f( 0, 0, 30 ), new Vector3f( 0, 0, 0 ), new Vector3f( 1, 1, 1 ) );
 			DrawableSceneNode pilarNode = new DrawableSceneNode( renderer, pilarModel, new Vector3f( 0, 2, 5 ), new Vector3f( 0, 0, 0 ), new Vector3f( 1, 1, 1 ) );
 			DrawableSceneNode boulderNode = new DrawableSceneNode( renderer, boulderModel, new Vector3f( 0, 3, 7 ), new Vector3f( 0, 0, 0 ), new Vector3f( .2f, .2f, .2f ) );
-			DrawableSceneNode citadelNode = new DrawableSceneNode( renderer, citadelModel, new Vector3f( -20, 0, 45 ), new Vector3f( -(float)Math.PI / 2, 0, 0 ), new Vector3f( .1f, .1f, .1f ) );
-			DrawableSceneNode cameraNode = new DrawableSceneNode( renderer, cameraModel, new Vector3f( -10, 2, 25 ), new Vector3f( -(float)Math.PI / 2, 0, 0 ), new Vector3f( 1, 1, 1 ) );
+			DrawableSceneNode citadelNode = new DrawableSceneNode( renderer, citadelModel, new Vector3f( -20, 0, 45 ), new Vector3f( -(float)java.lang.Math.PI / 2, 0, 0 ), new Vector3f( .1f, .1f, .1f ) );
+			DrawableSceneNode cameraNode = new DrawableSceneNode( renderer, cameraModel, new Vector3f( -10, 2, 25 ), new Vector3f( -(float)java.lang.Math.PI / 2, 0, 0 ), new Vector3f( 1, 1, 1 ) );
 			
 			renderer.AddSceneNode( palm1 );
 			renderer.AddSceneNode( palm2 );
@@ -126,23 +124,18 @@ public class GameLoop
 			
 			for( int i = 0; i < 100; ++i )
 			{
-				DrawableSceneNode node = new DrawableSceneNode( renderer, citadelModel, new Vector3f( -20 + (float)Math.random() * 800 - 400, 0, 45 + (float)Math.random() * 800 - 400 ),
-						new Vector3f( -(float)Math.PI / 2, 0, 0 ), new Vector3f( (float)Math.random() * 0.05f + 0.05f, (float)Math.random() * 0.05f + 0.05f, (float)Math.random() * 0.05f + 0.05f ) );
+				DrawableSceneNode node = new DrawableSceneNode( renderer, citadelModel, new Vector3f( -20 + (float)java.lang.Math.random() * 800 - 400, 0, 45 + (float)java.lang.Math.random() * 800 - 400 ), new Vector3f( -(float)java.lang.Math.PI / 2, 0, 0 ), new Vector3f( (float)java.lang.Math.random() * 0.05f + 0.05f, (float)java.lang.Math.random() * 0.05f + 0.05f, (float)java.lang.Math.random() * 0.05f + 0.05f ) );
 				renderer.AddSceneNode( node );
 			}
 			
-			Light light = new Light( 70, 0.1f, 300, new Vector3f( 0, 2.3f, 30 ), new Vector3f( 0.1f, 0, 0 ), new Vector3f( 1, 1, 1 ), new Vector3f( 1, .7f, .4f ), new Vector3f( .2f, .001f, .001f ),
-					10 );
+			Light light = new Light( 70, 0.1f, 300, new Vector3f( 0, 2.3f, 30 ), new Vector3f( 0.1f, 0, 0 ), new Vector3f( 1, 1, 1 ), new Vector3f( 1, .7f, .4f ), new Vector3f( .2f, .001f, .001f ), 10 );
 			renderer.AddLight( light );
 			GameLoop.LIGHT = light;
-			Light light2 = new Light( 80, 0.1f, 300, new Vector3f( 35, 4.3f, 50 ), new Vector3f( 0.2f, 0, 0 ), new Vector3f( 1, 1, 1 ), new Vector3f( .4f, .7f, 1 ), new Vector3f( .2f, .001f, .001f ),
-					0 );
+			Light light2 = new Light( 80, 0.1f, 300, new Vector3f( 35, 4.3f, 50 ), new Vector3f( 0.2f, 0, 0 ), new Vector3f( 1, 1, 1 ), new Vector3f( .4f, .7f, 1 ), new Vector3f( .2f, .001f, .001f ), 0 );
 			renderer.AddLight( light2 );
-			Light light3 = new Light( 90, 0.1f, 300, new Vector3f( -20, 30, 45 ), new Vector3f( 0.8f, 0, 0 ), new Vector3f( 1, 1, 1 ), new Vector3f( 1, .4f, .1f ), new Vector3f( .2f, .001f, .001f ),
-					0 );
+			Light light3 = new Light( 90, 0.1f, 300, new Vector3f( -20, 30, 45 ), new Vector3f( 0.8f, 0, 0 ), new Vector3f( 1, 1, 1 ), new Vector3f( 1, .4f, .1f ), new Vector3f( .2f, .001f, .001f ), 0 );
 			renderer.AddLight( light3 );
-			Light light4 = new Light( 80, 0.1f, 300, new Vector3f( 0, -0.3f, 0 ), new Vector3f( 0.1f, 0, 0 ), new Vector3f( 1, 1, 1 ), new Vector3f( 1, .7f, .4f ), new Vector3f( .2f, .001f, .001f ),
-					10 );
+			Light light4 = new Light( 80, 0.1f, 300, new Vector3f( 0, -0.3f, 0 ), new Vector3f( 0, 0, 0 ), new Vector3f( 1, 1, 1 ), new Vector3f( 1, .7f, .4f ), new Vector3f( .2f, .001f, .001f ), 10 );
 			renderer.AddLight( light4 );
 			
 			Camera camera = new Camera( 70, 0.1f, 400, new Vector3f( 0, 0, 1 ) );
@@ -153,8 +146,8 @@ public class GameLoop
 			{
 				beginTime = GameLoop.GetTime();
 				
-				Vector3f.add( light3.GetRotation(), new Vector3f( 0, GameLoop.deltaTime * 1.2f, 0 ), light3.GetRotation() );
-				Vector3f.add( light2.GetRotation(), new Vector3f( 0, GameLoop.deltaTime, 0 ), light2.GetRotation() );
+				light3.GetRotation().add( new Vector3f( 0, GameLoop.deltaTime * 1.2f, 0 ) );
+				light2.GetRotation().add( new Vector3f( 0, GameLoop.deltaTime, 0 ) );
 				
 				if( Keyboard.isKeyDown( Keyboard.KEY_N ) )
 					light.SetInnerSpotAngle( light.GetInnerSpotAngle() - 20 * GameLoop.deltaTime );
@@ -174,9 +167,9 @@ public class GameLoop
 				GameLoop.wasPressedF = Keyboard.isKeyDown( Keyboard.KEY_F );
 				
 				if( Keyboard.isKeyDown( Keyboard.KEY_O ) )
-					multiMatNode.GetScale().scale( 1.1f );
+					multiMatNode.GetScale().mul( 1.1f );
 				if( Keyboard.isKeyDown( Keyboard.KEY_P ) )
-					multiMatNode.GetScale().scale( 1 / 1.1f );
+					multiMatNode.GetScale().mul( 1 / 1.1f );
 				if( multiMatNode.GetScale().length() < 0.01 )
 					multiMatNode.GetScale().set( 0.01f, 0.01f, 0.01f );
 				
@@ -192,12 +185,15 @@ public class GameLoop
 				
 				endTime = GameLoop.GetTime();
 				GameLoop.deltaTime = endTime - beginTime;
+				
 			}
+			
+			System.out.println( "Game loop ended" );
 			
 			shaderNormalMapped.Destroy();
 			shader.Destroy();
 			loader.Destroy();
-			DisplayManager.Destroy();
+			Display.Destroy();
 		}catch( Exception e )
 		{
 			e.printStackTrace();

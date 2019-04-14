@@ -6,7 +6,7 @@ package SceneNodes;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.lwjgl.util.vector.*;
+import org.joml.*;
 
 import Util.Maths;
 
@@ -117,9 +117,10 @@ public abstract class SceneNode
 		this.worldTransformationMatrix = Maths.CreateTransformMatrix( this.location, this.rotation, this.scale );
 		if( this.parentNode != null )
 		{
-			Matrix4f.mul( this.parentNode.worldTransformationMatrix, this.worldTransformationMatrix, this.worldTransformationMatrix );
+			this.parentNode.worldTransformationMatrix.mul( this.worldTransformationMatrix, this.worldTransformationMatrix );
+			//this.worldTransformationMatrix.set( this.parentNode.worldTransformationMatrix ).mul( this.worldTransformationMatrix );
 			Vector4f t = new Vector4f( this.location.x, this.location.y, this.location.z, 1 );
-			Matrix4f.transform( this.worldTransformationMatrix, t, t );
+			this.worldTransformationMatrix.transform( t );
 			this.worldLocation.set( t.x, t.y, t.z );
 		}else
 		{

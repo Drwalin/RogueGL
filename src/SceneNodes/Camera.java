@@ -3,14 +3,14 @@
 
 package SceneNodes;
 
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.Display;
-import org.lwjgl.util.vector.*;
+import org.joml.*;
 
 import Game.GameLoop;
+import RenderEngine.Display;
 import RenderEngine.FrameBuffer;
+import Util.Keyboard;
 import Util.Maths;
+import Util.Mouse;
 
 public class Camera extends CameraBase
 {
@@ -44,48 +44,44 @@ public class Camera extends CameraBase
 		if( Keyboard.isKeyDown( Keyboard.KEY_LCONTROL ) )
 			this.location.y -= GameLoop.deltaTime * movementSpeed;
 		if( Keyboard.isKeyDown( Keyboard.KEY_W ) )
-			Vector3f.add( temp, Maths.VEC_FORWARD, temp );
+			temp.add( Maths.VEC_FORWARD );
 		if( Keyboard.isKeyDown( Keyboard.KEY_A ) )
-			Vector3f.add( temp, Maths.VEC_LEFT, temp );
+			temp.add( Maths.VEC_LEFT );
 		if( Keyboard.isKeyDown( Keyboard.KEY_S ) )
-			Vector3f.add( temp, Maths.VEC_BACKWARD, temp );
+			temp.add( Maths.VEC_BACKWARD );
 		if( Keyboard.isKeyDown( Keyboard.KEY_D ) )
-			Vector3f.add( temp, Maths.VEC_RIGHT, temp );
+			temp.add( Maths.VEC_RIGHT );
 
 		if( Keyboard.isKeyDown( Keyboard.KEY_LEFT ) )
-			this.rotation.y -= GameLoop.deltaTime * rotationSpeed;
-		if( Keyboard.isKeyDown( Keyboard.KEY_RIGHT ) )
 			this.rotation.y += GameLoop.deltaTime * rotationSpeed;
+		if( Keyboard.isKeyDown( Keyboard.KEY_RIGHT ) )
+			this.rotation.y -= GameLoop.deltaTime * rotationSpeed;
 		if( Keyboard.isKeyDown( Keyboard.KEY_UP ) )
-			this.rotation.x -= GameLoop.deltaTime * rotationSpeed;
-		if( Keyboard.isKeyDown( Keyboard.KEY_DOWN ) )
 			this.rotation.x += GameLoop.deltaTime * rotationSpeed;
+		if( Keyboard.isKeyDown( Keyboard.KEY_DOWN ) )
+			this.rotation.x -= GameLoop.deltaTime * rotationSpeed;
 
-		Vector2f windowSize = new Vector2f( Display.getWidth(), Display.getHeight() );
-		Vector2f mouseOrigin = new Vector2f( windowSize.x * 0.5f, windowSize.y * 0.5f );
-		Vector2f mousePosition = new Vector2f( Mouse.getX() - mouseOrigin.x, Mouse.getY() - mouseOrigin.y );
+		this.rotation.x -= Mouse.GetDY() * 0.004f;
+		this.rotation.y -= Mouse.GetDX() * 0.004f;
+		Mouse.NullPosition();
 
-		this.rotation.x += mousePosition.y * 0.004f;
-		this.rotation.y -= mousePosition.x * 0.004f;
-		Mouse.setCursorPosition( (int) mouseOrigin.x, (int) mouseOrigin.y );
-
-		if( this.rotation.x > Math.PI * 0.5 )
-			this.rotation.x = (float) Math.PI * 0.5f;
-		else if( this.rotation.x < -Math.PI * 0.5 )
-			this.rotation.x = -(float) Math.PI * 0.5f;
+		if( this.rotation.x > java.lang.Math.PI * 0.5 )
+			this.rotation.x = (float) java.lang.Math.PI * 0.5f;
+		else if( this.rotation.x < -java.lang.Math.PI * 0.5 )
+			this.rotation.x = -(float) java.lang.Math.PI * 0.5f;
 
 		if( temp.lengthSquared() > 0.01f )
 		{
 			Matrix4f matrix = new Matrix4f();
-			Matrix4f.rotate( this.rotation.y, Maths.VEC_Y, matrix, matrix );
-			Matrix4f.rotate( this.rotation.x, Maths.VEC_X, matrix, matrix );
-
-			Matrix4f.transform( matrix, new Vector4f( temp.x, temp.y, temp.z, 1.0f ), temp4 );
+			matrix.rotate( this.rotation.y, Maths.VEC_Y );
+			matrix.rotate( this.rotation.x, Maths.VEC_X );
+			temp4.set( temp.x, temp.y, temp.z, 1 );
+			matrix.transform( temp4 );
 
 			temp.x = temp4.x;
 			temp.y = temp4.y;
 			temp.z = temp4.z;
-			temp.normalise( temp2 );
+			temp.normalize( temp2 );
 
 			this.location.x += temp2.x * GameLoop.deltaTime * movementSpeed;
 			this.location.y += temp2.y * GameLoop.deltaTime * movementSpeed;
@@ -100,22 +96,22 @@ public class Camera extends CameraBase
 		if( Keyboard.isKeyDown( Keyboard.KEY_2 ) )
 		{
 			this.location = new Vector3f( 4, 1.5f, 0 );
-			this.rotation = new Vector3f( 0.23f, -(float) Math.PI * 1.0f / 2.0f, 0 );
+			this.rotation = new Vector3f( 0.23f, -(float) java.lang.Math.PI * 1.0f / 2.0f, 0 );
 		}
 		if( Keyboard.isKeyDown( Keyboard.KEY_3 ) )
 		{
 			this.location = new Vector3f( 0, 1.5f, -4 );
-			this.rotation = new Vector3f( 0.23f, -(float) Math.PI * 2.0f / 2.0f, 0 );
+			this.rotation = new Vector3f( 0.23f, -(float) java.lang.Math.PI * 2.0f / 2.0f, 0 );
 		}
 		if( Keyboard.isKeyDown( Keyboard.KEY_4 ) )
 		{
 			this.location = new Vector3f( -4, 1.5f, 0 );
-			this.rotation = new Vector3f( 0.23f, -(float) Math.PI * 3.0f / 2.0f, 0 );
+			this.rotation = new Vector3f( 0.23f, -(float) java.lang.Math.PI * 3.0f / 2.0f, 0 );
 		}
 		if( Keyboard.isKeyDown( Keyboard.KEY_5 ) )
 		{
 			this.location = new Vector3f( 0, 2, 0 );
-			this.rotation = new Vector3f( (float) Math.PI * 1.0f / 2.0f, 0, 0 );
+			this.rotation = new Vector3f( (float) java.lang.Math.PI * 1.0f / 2.0f, 0, 0 );
 		}
 		if( Keyboard.isKeyDown( Keyboard.KEY_6 ) )
 		{

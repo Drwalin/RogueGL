@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.lwjgl.util.vector.*;
+import org.joml.*;
 
 import Models.RawModel;
 
@@ -140,7 +140,7 @@ public class LoaderOBJ
 				uvsArray[id * 2 + 1] = t2.y;
 
 				t3 = normals.get( Integer.parseInt( idString[2] ) - 1 );
-				t3.normalise();
+				t3.normalize();
 				normalsArray[id * 3] = t3.x;
 				normalsArray[id * 3 + 1] = t3.y;
 				normalsArray[id * 3 + 2] = t3.z;
@@ -205,27 +205,27 @@ public class LoaderOBJ
 					uv2.y = uvsArray[v2i * 2 + 1];
 					uv3.x = uvsArray[v3i * 2];
 					uv3.y = uvsArray[v3i * 2 + 1];
+					
+					pA.set(p2).sub( p1 );
+					pB.set(p3).sub( p1 );
 
-					Vector3f.sub( p2, p1, pA );
-					Vector3f.sub( p3, p1, pB );
-
-					Vector2f.sub( uv2, uv1, uvA );
-					Vector2f.sub( uv3, uv1, uvB );
+					uvA.set(uv2).sub( uv1 );
+					uvB.set(uv3).sub( uv1 );
 
 					float r = 1.0F / (uvA.x * uvB.y - uvB.x * uvA.y);
-					pA.scale( uvB.y );
-					pB.scale( uvA.y );
-					Vector3f tang = Vector3f.sub( pA, pB, null );
-					tang.scale( r );
+					pA.mul( uvB.y );
+					pB.mul( uvA.y );
+					Vector3f tang = new Vector3f(pA).sub( pB );
+					tang.mul( r );
 
-					Vector3f.add( tangent[v1i], tang, tangent[v1i] );
-					Vector3f.add( tangent[v2i], tang, tangent[v2i] );
-					Vector3f.add( tangent[v3i], tang, tangent[v3i] );
+					tangent[v1i].add( tang );
+					tangent[v2i].add( tang );
+					tangent[v3i].add( tang );
 				}
 
 				for( int i = 0; i < combinedVerticesNumber; ++i )
 				{
-					tangent[i].normalise();
+					tangent[i].normalize();
 
 					tangentsArray[i * 3] = tangent[i].x;
 					tangentsArray[i * 3 + 1] = tangent[i].y;

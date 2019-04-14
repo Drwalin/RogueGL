@@ -4,7 +4,7 @@
 package Uniforms;
 
 import org.lwjgl.opengl.GL20;
-import org.lwjgl.util.vector.Vector3f;
+import org.joml.*;
 
 import Shaders.Shader;
 

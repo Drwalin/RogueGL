@@ -7,8 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Vector3f;
+import org.joml.*;
 
 import SceneNodes.CameraBase;
 import SceneNodes.Light;
@@ -101,8 +100,8 @@ public class Renderer
 			this.drawingShadow = true;
 			
 			GL11.glClear( GL11.GL_DEPTH_BUFFER_BIT );
-			//GL11.glCullFace( GL11.GL_FRONT );
-			//GL11.glCullFace( GL11.GL_BACK );
+			// GL11.glCullFace( GL11.GL_FRONT );
+			// GL11.glCullFace( GL11.GL_BACK );
 			GL11.glDisable( GL11.GL_CULL_FACE );
 		}else
 		{
@@ -114,10 +113,9 @@ public class Renderer
 			GL11.glEnable( GL11.GL_CULL_FACE );
 		}
 		
-		
 		camera.UpdateDrawState();
 		this.projectionMatrix = camera.GetProjectionMatrix();
 		this.viewMatrix = camera.GetViewMatrix();
-		Matrix4f.mul( this.projectionMatrix, this.viewMatrix, this.combinedMatrix );
+		this.combinedMatrix.set( this.projectionMatrix ).mul( this.viewMatrix );
 	}
 }

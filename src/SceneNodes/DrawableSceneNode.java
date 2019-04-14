@@ -3,7 +3,7 @@
 
 package SceneNodes;
 
-import org.lwjgl.util.vector.Vector3f;
+import org.joml.*;
 
 import Models.TexturedModel;
 import RenderEngine.MasterRenderer;

@@ -4,7 +4,7 @@
 package Shaders;
 
 import org.lwjgl.opengl.*;
-import org.lwjgl.util.vector.*;
+import org.joml.*;
 
 import Materials.Material;
 import RenderEngine.MasterRenderer;
@@ -111,15 +111,14 @@ public class ShaderScreenDrawer extends Shader
 		
 		// Set camera data:
 		this.cameraPositionUniform.Set( renderer.GetCameraLocation() );
-		Matrix4f camMatrix = Matrix4f.mul( (Matrix4f)renderer.GetCurrentCamera().GetViewMatrix().invert(), (Matrix4f)renderer.GetCurrentCamera().GetProjectionMatrix().invert(), null );
-		//camMatrix.invert();
+		Matrix4f camMatrix = new Matrix4f( renderer.GetCurrentCamera().GetViewMatrix() ).invert().mul( new Matrix4f( renderer.GetCurrentCamera().GetProjectionMatrix() ).invert() );
 		this.cameraMatrixUniform.Set( camMatrix );
 		
 		// Set lights data:
 		this.lightsMatrixUniform.Set( renderer.GetLightsTransformation() );
 		this.lightsPositionUniform.Set( renderer.GetLightsPosition() );
 		this.lightsColorUniform.Set( renderer.GetLightsColor() );
-		this.lightsDirectionUniform.Set(  renderer.GetLightsDirection() );
+		this.lightsDirectionUniform.Set( renderer.GetLightsDirection() );
 		this.lightsAttenuationUniform.Set( renderer.GetLightsAttenuation() );
 		for( int i = 0; i < renderer.GetLightsDepthBuffers().size(); ++i )
 		{

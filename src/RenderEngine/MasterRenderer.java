@@ -10,9 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.vector.*;
+import org.joml.*;
 
 import Loaders.Loader;
 import Materials.Material;
@@ -233,7 +232,7 @@ public class MasterRenderer extends Renderer
 		// Draw GUI:
 		
 		// Update display manager:
-		DisplayManager.Update();
+		Display.UpdateScreen();
 	}
 	
 	private void UpdateRenderState()
@@ -276,10 +275,10 @@ public class MasterRenderer extends Renderer
 					{
 						this.RenderScene( light );
 					}
-					this.lightsTransformation.add( Matrix4f.mul( light.GetProjectionMatrix(), light.GetViewMatrix(), null ) );
-					this.lightsPosition.add( new Vector4f( light.GetWorldLocation().x, light.GetWorldLocation().y, light.GetWorldLocation().z, (float)Math.cos( Math.toRadians( (double)light.GetInnerSpotAngle() / 2 ) ) ) );
+					this.lightsTransformation.add( new Matrix4f( light.GetProjectionMatrix() ).mul( light.GetViewMatrix() ) );
+					this.lightsPosition.add( new Vector4f( light.GetWorldLocation().x, light.GetWorldLocation().y, light.GetWorldLocation().z, (float)java.lang.Math.cos( java.lang.Math.toRadians( (double)light.GetInnerSpotAngle() / 2 ) ) ) );
 					this.lightsColor.add( light.GetColor() );
-					this.lightsAttenuation.add( new Vector4f( light.GetAttenuation().x, light.GetAttenuation().y, light.GetAttenuation().z, (float)Math.cos( Math.toRadians( (double)light.GetFov() / 2 ) ) ) );
+					this.lightsAttenuation.add( new Vector4f( light.GetAttenuation().x, light.GetAttenuation().y, light.GetAttenuation().z, (float)java.lang.Math.cos( java.lang.Math.toRadians( (double)light.GetFov() / 2 ) ) ) );
 					this.lightsDepthBuffers.add( light.GetFrameBuffer().GetDepthTexture() );
 					this.lightsDirection.add( light.GetForward() );
 				}

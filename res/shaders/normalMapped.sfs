@@ -9,7 +9,7 @@ uniform sampler2D textureSampler;
 
 void main( void )
 {
-	vec4 textureColorPoint = texture( textureSampler, vec2(texCoord.x,1-texCoord.y) );
+	vec4 textureColorPoint = texture( textureSampler, vec2(texCoord.x,texCoord.y) );
 	if( textureColorPoint.a < 0.3 )
 		discard;
 }
