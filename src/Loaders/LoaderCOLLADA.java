@@ -246,6 +246,16 @@ public class LoaderCOLLADA
 				for( NodeXML mesh : meshes )
 				{
 					NodeXML triangles = mesh.GetChild( "triangles" );
+					if( triangles == null )
+					{
+						triangles = mesh.GetChild( "polylist" );
+						if( triangles == null )
+						{
+							throw new Exception( "No triangles/polylist given for object: geometry(" + geometry.GetAttribute( "id" ) + ")" );
+						}
+						System.out.println( "COLLADA model should use triangles in: geometry(" + geometry.GetAttribute( "id" ) + ") instead of polylist, due to assumption that every polygon is triangle\n Stack trace: " );
+						new Exception().printStackTrace();
+					}
 					
 					Map<Integer, TypeData> sources = new HashMap<Integer, TypeData>();
 					for( NodeXML input : triangles.GetChildren( "input" ) )
