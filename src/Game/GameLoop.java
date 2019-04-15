@@ -138,6 +138,20 @@ public class GameLoop
 			{
 				DrawableSceneNode node = new DrawableSceneNode( renderer, citadelModel, new Vector3f( -20 + (float)java.lang.Math.random() * 800 - 400, 0, 45 + (float)java.lang.Math.random() * 800 - 400 ), new Quaternionf().rotateY( (float)java.lang.Math.random() * (float)java.lang.Math.PI * 2 ).rotateX( -(float)java.lang.Math.PI / 2 ), new Vector3f( (float)java.lang.Math.random() * 0.05f + 0.05f, (float)java.lang.Math.random() * 0.05f + 0.05f, (float)java.lang.Math.random() * 0.05f + 0.05f ) );
 				renderer.AddSceneNode( node );
+				for( int j = 0; j < 10; ++j )
+				{
+					DrawableSceneNode nodeChild = new DrawableSceneNode( renderer, citadelModel, new Vector3f( -20 + (float)java.lang.Math.random() * 800 - 400, 0, 45 + (float)java.lang.Math.random() * 800 - 400 ), new Quaternionf().rotateY( (float)java.lang.Math.random() * (float)java.lang.Math.PI * 2 ).rotateX( -(float)java.lang.Math.PI / 2 ), new Vector3f( (float)java.lang.Math.random() * 0.05f + 0.05f, (float)java.lang.Math.random() * 0.05f + 0.05f, (float)java.lang.Math.random() * 0.05f + 0.05f ) );
+					renderer.AddSceneNode( nodeChild );
+					node.AddChild( nodeChild );
+					for( int k = 0; k < 10; ++k )
+					{
+						DrawableSceneNode nodeChild2 = new DrawableSceneNode( renderer, citadelModel, new Vector3f( -20 + (float)java.lang.Math.random() * 800 - 400, 0, 45 + (float)java.lang.Math.random() * 800 - 400 ), new Quaternionf().rotateY( (float)java.lang.Math.random() * (float)java.lang.Math.PI * 2 ).rotateX( -(float)java.lang.Math.PI / 2 ), new Vector3f( (float)java.lang.Math.random() * 0.05f + 0.05f, (float)java.lang.Math.random() * 0.05f + 0.05f, (float)java.lang.Math.random() * 0.05f + 0.05f ) );
+						renderer.AddSceneNode( nodeChild2 );
+						nodeChild.AddChild( nodeChild2 );
+						nodeChild2.Disable();
+					}
+					nodeChild.Disable();
+				}
 			}
 			
 			Light light = new Light( 70, 0.1f, 300, new Vector3f( 0, 2.3f, 30 ), new Quaternionf().rotateX( -0.1f ), new Vector3f( 1, 1, 1 ), new Vector3f( 1, .7f, .4f ), new Vector3f( .2f, .001f, .001f ), 10 );

@@ -16,4 +16,6 @@ public class Maths
 	public static final Vector3f VEC_LEFT = new Vector3f( -1, 0, 0 );
 	public static final Vector3f VEC_DOWN = new Vector3f( 0, -1, 0 );
 	public static final Vector3f VEC_BACKWARD = VEC_Z;
+	
+	public static final Matrix4f MAT_IDENT = new Matrix4f().identity();
 }

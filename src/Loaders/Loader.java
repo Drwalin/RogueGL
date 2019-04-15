@@ -84,7 +84,7 @@ public class Loader
 		GL15.glBindBuffer( GL15.GL_ARRAY_BUFFER, vboID );
 		FloatBuffer buffer = Loader.StoreDataInFloatBuffer( data );
 		GL15.glBufferData( GL15.GL_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW );
-		GL20.glVertexAttribPointer( attributeNumber, coordinateSize, GL11.GL_FLOAT, false, 0, 0 );
+		GL20.glVertexAttribPointer( attributeNumber, coordinateSize, GL11.GL_FLOAT, false, coordinateSize * 4 /* FLOAT_SIZE */, 0 );
 		GL15.glBindBuffer( GL15.GL_ARRAY_BUFFER, 0 );
 		return vboID;
 	}
@@ -95,7 +95,9 @@ public class Loader
 		GL15.glBindBuffer( GL15.GL_ARRAY_BUFFER, vboID );
 		ByteBuffer buffer = Loader.StoreDataInByteBuffer( data );
 		GL15.glBufferData( GL15.GL_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW );
-		GL20.glVertexAttribPointer( attributeNumber, coordinateSize, GL11.GL_BYTE, false, 0, 0 );
+		// GL20.glVertexAttribPointer( attributeNumber, coordinateSize, GL11.GL_BYTE,
+		// false, coordinateSize*1/*BYTE_SIZE*/, 0 );
+		GL30.glVertexAttribIPointer( attributeNumber, coordinateSize, GL11.GL_BYTE, coordinateSize * 1, 0 );
 		GL15.glBindBuffer( GL15.GL_ARRAY_BUFFER, 0 );
 		return vboID;
 	}
@@ -123,6 +125,7 @@ public class Loader
 		GL15.glBufferData( GL15.GL_ELEMENT_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW );
 		return vboId;
 	}
+	
 	private static ByteBuffer StoreDataInByteBuffer( byte[] data )
 	{
 		ByteBuffer buffer = BufferUtils.createByteBuffer( data.length );
@@ -153,31 +156,33 @@ public class Loader
 		String path = "res/textures/" + fileName + ".png";
 		try
 		{
-			InputStream in = new FileInputStream(path);
-			BufferedImage image = ImageIO.read(in);
-			AffineTransform transform = AffineTransform.getScaleInstance(1f, -1f);
-			transform.translate(0, -image.getHeight());
-			AffineTransformOp operation = new AffineTransformOp(transform, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
-			image = operation.filter(image, null);
+			InputStream in = new FileInputStream( path );
+			BufferedImage image = ImageIO.read( in );
+			AffineTransform transform = AffineTransform.getScaleInstance( 1f, -1f );
+			transform.translate( 0, -image.getHeight() );
+			AffineTransformOp operation = new AffineTransformOp( transform, AffineTransformOp.TYPE_NEAREST_NEIGHBOR );
+			image = operation.filter( image, null );
 			int width = image.getWidth();
 			int height = image.getHeight();
 			int[] pixels = new int[width * height];
-			image.getRGB(0, 0, width, height, pixels, 0, width);
-			ByteBuffer buffer = BufferUtil.newByteBuffer( width * height * 4 );//stack.malloc(width * height * 4);
-
-			for (int y = 0; y < height; y++) {
-			    for (int x = 0; x < width; x++) {
-			        /* Pixel as RGBA: 0xAARRGGBB */
-			        int pixel = pixels[y * width + x];
-			        /* Red component 0xAARRGGBB >> (4 * 4) = 0x0000AARR */
-			        buffer.put((byte) ((pixel >> 16) & 0xFF));
-			        /* Green component 0xAARRGGBB >> (2 * 4) = 0x00AARRGG */
-			        buffer.put((byte) ((pixel >> 8) & 0xFF));
-			        /* Blue component 0xAARRGGBB >> 0 = 0xAARRGGBB */
-			        buffer.put((byte) (pixel & 0xFF));
-			        /* Alpha component 0xAARRGGBB >> (6 * 4) = 0x000000AA */
-			        buffer.put((byte) ((pixel >> 24) & 0xFF));
-			    }
+			image.getRGB( 0, 0, width, height, pixels, 0, width );
+			ByteBuffer buffer = BufferUtil.newByteBuffer( width * height * 4 );// stack.malloc(width * height * 4);
+			
+			for( int y = 0; y < height; y++ )
+			{
+				for( int x = 0; x < width; x++ )
+				{
+					/* Pixel as RGBA: 0xAARRGGBB */
+					int pixel = pixels[y * width + x];
+					/* Red component 0xAARRGGBB >> (4 * 4) = 0x0000AARR */
+					buffer.put( (byte)((pixel >> 16) & 0xFF) );
+					/* Green component 0xAARRGGBB >> (2 * 4) = 0x00AARRGG */
+					buffer.put( (byte)((pixel >> 8) & 0xFF) );
+					/* Blue component 0xAARRGGBB >> 0 = 0xAARRGGBB */
+					buffer.put( (byte)(pixel & 0xFF) );
+					/* Alpha component 0xAARRGGBB >> (6 * 4) = 0x000000AA */
+					buffer.put( (byte)((pixel >> 24) & 0xFF) );
+				}
 			}
 			buffer.flip();
 			

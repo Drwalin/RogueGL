@@ -213,6 +213,43 @@ public class MasterRenderer extends Renderer
 		}
 	}
 	
+	public void EnableSceneNode( DrawableSceneNode sceneNode )
+	{
+		if( this.sceneNodesBank.containsKey( sceneNode ) )
+		{
+			this.DisableSceneNode( sceneNode );
+			
+			TexturedModel texModel = sceneNode.GetModel();
+			RawModel model = texModel.GetRawModel();
+			
+			for( int i = 0; i < model.GetMaterialsCount(); ++i )
+			{
+				Material material = texModel.GetMaterialSet().get( i );
+				Shader shader = material.GetShader();
+				this.Add( shader, material, model, i, sceneNode );
+			}
+		}
+	}
+	
+	public void DisableSceneNode( DrawableSceneNode sceneNode )
+	{
+		if( this.sceneNodesBank.containsKey( sceneNode ) )
+		{
+			TexturedModel texModel = this.sceneNodesBank.get( sceneNode );
+			if( texModel != null )
+			{
+				RawModel model = texModel.GetRawModel();
+				
+				for( int i = 0; i < model.GetMaterialsCount(); ++i )
+				{
+					Material material = texModel.GetMaterialSet().get( i );
+					Shader shader = material.GetShader();
+					this.Remove( shader, material, model, i, sceneNode );
+				}
+			}
+		}
+	}
+	
 	public void Render()
 	{
 		// Update DrawableSceneNodes world transformation matrices:
@@ -235,23 +272,20 @@ public class MasterRenderer extends Renderer
 		Display.UpdateScreen();
 	}
 	
-	// should be parallelized
 	private void UpdateTransformationState()
 	{
-		for( DrawableSceneNode sceneNode : this.sceneNodesBank.keySet() )
-		{
+		this.sceneNodesBank.keySet().parallelStream().forEach( ( sceneNode ) -> {
 			if( sceneNode.UseGlobalUpdate() )
 			{
 				sceneNode.UpdateTransformationState( true );
 			}
-		}
-		for( CameraBase camera : this.cameras )
-		{
+		} );
+		this.cameras.parallelStream().forEach( ( camera ) -> {
 			if( camera.UseGlobalUpdate() )
 			{
 				camera.UpdateTransformationState( true );
 			}
-		}
+		} );
 	}
 	
 	private void RenderShadows()
@@ -326,11 +360,8 @@ public class MasterRenderer extends Renderer
 						
 						for( DrawableSceneNode sceneNode : entry4.getValue() )
 						{
-							if( sceneNode.IsEnabled() )
-							{
-								shader.SetUniforms( sceneNode, this, material );
-								GL11.glDrawElements( GL11.GL_TRIANGLES, model.GetMaterialIndexCount( materialId ), GL11.GL_UNSIGNED_INT, model.GetMaterialIndexOffset( materialId ) );
-							}
+							shader.SetUniforms( sceneNode, this, material );
+							GL11.glDrawElements( GL11.GL_TRIANGLES, model.GetMaterialIndexCount( materialId ), GL11.GL_UNSIGNED_INT, model.GetMaterialIndexOffset( materialId ) );
 						}
 					}
 				}

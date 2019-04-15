@@ -11,7 +11,7 @@ import RenderEngine.MasterRenderer;
 public class DrawableSceneNode extends SceneNode
 {
 	private TexturedModel model;
-	private MasterRenderer renderer;
+	private final MasterRenderer renderer;
 
 	public DrawableSceneNode( MasterRenderer renderer, TexturedModel model, Vector3f location, Quaternionf rotation, Vector3f scale )
 	{
@@ -43,6 +43,20 @@ public class DrawableSceneNode extends SceneNode
 	{
 		this.model = model;
 		this.renderer.AddSceneNode( this );
+	}
+	
+	@Override
+	public void Enable()
+	{
+		super.Enable();
+		this.renderer.EnableSceneNode( this );
+	}
+	
+	@Override
+	public void Disable()
+	{
+		super.Disable();
+		this.renderer.DisableSceneNode( this );
 	}
 
 }
